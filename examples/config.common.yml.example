@@ -1,0 +1,73 @@
+"""
+A basic Django configuration that assumes deployment from GitHub via `stg`
+and `prd` branches.
+
+Basic deployment structure includes:
+
+  * `stg` staging branch/environment is merged from master
+  * `prd` staging branch/environment is merged from stg
+  * `env` directory in application user's home for containing virualenvs
+  * `sites` director in application user's home for the project repositories
+  * Nginx reverse proxy to gunicorn on a port managed by Upstart
+  * static media hosted in s3
+  * project_name == GitHub repository name
+
+At a minimum, you will need to set the first 4 parameters in this file and
+several similarly annotated parameters in config.prd.yml and config.stg.yml
+
+"""
+project_name: ___PUT_PROJECT_NAME_HERE___
+application_user: ___PUT_APPLICATION_USERNAME_HERE___
+port: ___PUT_PORT_NUMBER_HERE___
+github_account: ___PUT_GITHUB_ACCOUNT_HERE___
+
+python: python3 # (python2|python3)
+type: django # (django|flask|other|repository)
+
+# These will be merged with deployment-specific env into init_env
+# The assumption here is that you are doing something like os.environ.get in
+# your Django settings file to set these various parameters
+init_env_common:
+  PROJECT_NAME: "{{ project_name }}"
+  APPLICATION_DOMAINS: "{{ domains }}" # space-delimited
+  EMAIL_HOST_USER: "{{ vault_email_host_user }}"
+  EMAIL_HOST_PASSWORD: "{{ vault_email_host_password }}"
+  DB_ENGINE__DEFAULT: "django.db.backends.postgresql_psycopg2"
+  DB_NAME__DEFAULT: "{{ project_name }}_{{ env }}"
+  DB_USER__DEFAULT: "{{ vault_db_user__default }}"
+  DB_PASSWORD__DEFAULT: "{{ vault_db_password__default }}"
+  DB_HOST__DEFAULT: "{{ vault_db_host__default }}"
+  DB_PORT__DEFAULT: "{{ vault_db_port__default }}"
+  # Django specific
+  DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
+  STATIC_TMPDIR: "{{ static_tmpdir }}"
+  DJANGO_SECRET_KEY: "{{ vault_django_secret_key }}"
+
+
+# Django specific configs
+django_settings_module: "core.settings.ec2"
+static_tmpdir: "/tmp/{{ project_name }}_static" # used to collecstatic before s3 sync
+
+# Flask specific configs
+static_dir: "{{ deploy_dir }}/static"
+
+
+application_dir: "{{ deploy_dir }}" # application dir could be a subdirectory
+
+# Configs below will not usually change between projects
+deploy_dir: "{{ install_root }}/{{ project_name }}"
+env_setup_script: "{{ deploy_dir }}/env.sh"
+env_run_script: "{{ deploy_dir }}/env_run.sh"
+project_repo: "git@github.com:{{ github_account }}/{{ project_name }}.git"
+requirements_file: "{{ deploy_dir }}/requirements.txt"
+virtualenv: "{{ virtualenv_root }}/{{ project_name }}"
+wsgi_application: "core.wsgi:application"
+service_name: "{{ project_name }}"
+install_root: /home/{{ application_user }}/sites
+virtualenv_root: /home/{{ application_user }}/env
+
+# environment keys must match deployment branch names. Value is the name
+# of the branch to be merged into this environment during deployment.
+supported_envs:
+  stg: master
+  prd: stg

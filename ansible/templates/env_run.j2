@@ -1,0 +1,5 @@
+#!/bin/sh
+# setup the environment and call whatever was passed in
+. {{ virtualenv }}/bin/activate
+. {{ env_setup_script }}
+./$@

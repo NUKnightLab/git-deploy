@@ -1,0 +1,79 @@
+- hosts: "{{ env }}-app"
+  # beer ransom for whoever figures out how to make these vars_files optional so
+  # that we don't need empty vault files for projects with no secrets
+  vars_files:
+    - "{{ config_dir }}/config.common.yml"
+    - "{{ config_dir }}/config.{{ env }}.yml"
+    - "{{ vault_dir }}/{{ project_name }}/vault.{{ env }}.yml"
+  gather_facts: false
+  become: yes
+  become_user: "{{ application_user }}"
+  become_method: sudo
+
+  # For whatever reason, for new deployments, it seems like nginx is not
+  # getting restarted at the right time. Thus for new deploys only, it is
+  # necessary to manually kick nginx.
+  #
+  # ^ this may no longer be true. Some changes were made b/c nginx was not
+  # restarting in general and might have fixed this for new deploys.
+  # See further notes in deploy.web.yml
+
+  tasks:
+
+    - name: create env setup script
+      template:
+        src=templates/env.j2
+        dest="{{ env_setup_script }}"
+      notify:
+      - restart appserver
+
+    - name: create env_run script
+      template:
+        src=templates/env_run.j2
+        dest="{{ env_run_script }}"
+        mode=u+rwx
+
+    - name: copy upstart config
+      template:
+        src=templates/upstart.j2
+        dest=/etc/init/{{ service_name }}.conf
+      notify:
+      - restart appserver
+      - restart nginx
+
+    - name: install python packages
+      pip:
+        requirements={{ requirements_file }}
+        virtualenv={{ virtualenv }}
+        virtualenv_python={{ python }}
+      notify:
+      - restart appserver
+      - restart nginx
+
+    - name: set project location in virtual environment
+      template:
+        src=templates/project.j2
+        dest="{{ virtualenv }}/.project"
+
+    - name: django migrate
+      when: type == "django" and (django_migrate is undefined or django_migrate)
+      # django manage.py command does not support env vars, thus shell instead
+      shell: "{{ env_run_script }} manage.py migrate --noinput"
+      args:
+        chdir: "{{ application_dir }}"
+
+    # service module is really flaky on custom upstart scripts. It seems more
+    # consistent to use raw calls to service. This also requires sudoers:
+    # apps    ALL=(ALL) NOPASSWD:ALL
+    # Per various discussions, it seems like this is just how it is. See, e.g.:
+    # https://github.com/ansible/ansible/issues/5712
+
+    # Be sure service permissions are accessible by ansible user
+    - name: make sure application server is running
+      #  should we be using shell or command here instead of raw?
+      raw: if (sudo service {{ service_name }} status|grep stop); then sudo service {{ service_name }} start; fi
+
+
+  handlers:
+    - name: restart appserver
+      raw: sudo service {{ service_name }} restart

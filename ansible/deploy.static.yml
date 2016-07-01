@@ -1,0 +1,42 @@
+- hosts: "{{ env }}-app"
+  vars_files:
+    - "{{ config_dir }}/config.common.yml"
+    - "{{ config_dir }}/config.{{ env }}.yml"
+    - "{{ vault_dir }}/{{ project_name }}/vault.{{ env }}.yml"
+  gather_facts: false
+  become: yes
+  become_user: "{{ application_user }}"
+  become_method: sudo
+
+  # Tasks should be run once all by the same host. Ansible's run_once
+  # will delegate to the first relevant host. To be more specific, we may
+  # need to use delegate_to
+
+  # sync up static files from the deployment env to S3
+  #
+  # Requires the AWS cli configured for S3 sync on the remote host delegated
+  # for these tasks
+
+  tasks:
+
+    - name: set static path for Django project
+      when: type == "django" and static_tmpdir is defined
+      set_fact: static_dir={{ static_tmpdir }}
+
+    - name: collect static files for Django project
+      when: type == "django" and static_tmpdir is defined
+      run_once: true
+      # we use the env_run_script to set any env vars that are required
+      shell: "{{ env_run_script }} manage.py collectstatic --noinput"
+      args:
+        chdir: "{{ application_dir }}"
+
+    - name: sync to s3
+      when: type in ("django","flask") and static_dir is defined
+      run_once: true
+      shell: aws s3 sync --acl public-read {{ static_dir }} s3://{{ staticbucket }}
+
+    - name: remove temporary collecstatic directory
+      when: static_tmpdir is defined
+      file: path={{ static_tmpdir }} state=absent
+      run_once: true
