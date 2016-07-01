@@ -21,6 +21,9 @@ have the same name)
   An option to run specific playbooks, including the static media playbook, is
   being considered for future development.
 
+  `--playbook=<playbook>` run a specific playbook. Currently supported playbooks
+   are: deploy.python.yml, deploy.static.yml, 'deploy.repository.yml, deploy.web.yml
+
 
 ## Getting started checklist
 
@@ -193,10 +196,10 @@ supported_envs:
 ```
 
 
-### S3-based static deployment
+### Static file deployment
 
-Static files are hosted in S3. That said, support for self serving
-static files should only require some minor tweaks to the current approach.
+Support is currently provided for S3 sync or for copying static files into a
+server filesystem directory for self-hosting.
 
 
 ### Implicit security handling
