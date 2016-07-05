@@ -164,13 +164,6 @@ should follow the naming convention of `vault.<env>.yml`
 Default: `~/.vault_password`. File which contains the password for decrypting
 Ansible vault files located in the vault directory.
 
-**GIT_DEPLOY_VERSION**
-The default behavior is for git-deploy to use the currently checked-out branch
-of the git-deploy repository. For projects configured for a specific git-deploy
-branch, specify the version branch with this variable. NOTE: This setting
-requires the use of git-deploy.wrapper.sh. Calling git-deploy.py directly will
-simply use the current checkout.
-
 
 ## Project organization and operations requirements
 

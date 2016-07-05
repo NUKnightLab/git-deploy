@@ -13,6 +13,11 @@ import sys
 from subprocess import check_output as _check_output
 from subprocess import call as _call
 import yaml
+from version import __version__
+
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
 
 
 def _sh(*args):
@@ -126,6 +131,15 @@ SUPPORTED_PLAYBOOKS = [
 ]
 
 def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
+    gitdeploy_version = COMMON_CONFIG.get('gitdeploy_version')
+    if gitdeploy_version and gitdeploy_version != __version__:
+        print(FAIL + \
+            '\nThis project is designed for git-deploy version %s. Please ' \
+            'checkout the %s version branch before executing git-deploy or ' \
+            'use git-deploy wrapper for automated version management\n' \
+             % (gitdeploy_version, gitdeploy_version) \
+            + ENDC)
+        sys.exit(0)
     if COMMON_CONFIG['type'] == 'repository':
         deploy_repository_only(env, verbose)
         return
