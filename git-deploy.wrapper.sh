@@ -2,7 +2,14 @@
 # For a specific version branch, set the environment variable GIT_DEPLOY_VERSION
 
 # because MacOS does not support readlink -f
+WARNING='\033[93m'
+FAIL='\033[91m'
+ENDC='\033[0m'
+
 ORIG_DIR=`pwd -P`
+DEPLOY_DIR=$ORIG_DIR/${GIT_DEPLOY_PROJECT_CONFIG_DIR:-deploy}
+GIT_DEPLOY_VERSION=$(awk -F":" '/gitdeploy_version/ {gsub(/"/,"", $2); print $2 }' $DEPLOY_DIR/config.common.yml)
+
 TARGET_FILE=$0
 cd `dirname $TARGET_FILE`
 TARGET_FILE=`basename $TARGET_FILE`
@@ -18,6 +25,10 @@ do
         GIT_DEPLOY_ORIG_VERSION=`git rev-parse --symbolic-full-name --abbrev-ref HEAD`
         echo "Switching to git-deploy version $GIT_DEPLOY_VERSION"
         git checkout $GIT_DEPLOY_VERSION
+        if [[ $? != 0 ]]; then
+            echo "${FAIL}Error. Could not checkout correct git-deploy version${ENDC}"
+            exit 1
+        fi
     fi
 DEPLOY_SCRIPT=$TARGET_DIR/git-deploy.py
 cd $ORIG_DIR

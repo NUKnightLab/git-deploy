@@ -43,8 +43,10 @@ These variables are generally available for use in configuration
   * `static_tmpdir` temporary collection directory for Django projects that use collectstatic
   * `type` the type of this application (django|flask|repository|other)
   * `application_dir` (see `application_dir` description for `deploy.python.yml`)
+  * `static_service` (optional) specify s3 for S3 sync support or leave undefined or empty for filesystem copy to web hosting directory (see `static_dest` parameter)
   * `static_dir` location of static files to be synced to s3. Not used if Django collectstatic is used
-  * `staticbucket` the s3 bucket to sync files into
+  * `static_dest` S3 endpoint or filesystem directory to copy static files into
+  * `staticbucket` (deprecated) the s3 bucket to sync files into (<1.0.2 only. Use `static_dest` now)
 
 
 ## deploy.web.yml

@@ -13,6 +13,11 @@ import sys
 from subprocess import check_output as _check_output
 from subprocess import call as _call
 import yaml
+from version import __version__
+
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
 
 
 def _sh(*args):
@@ -118,21 +123,46 @@ def deploy_static(env, verbose, project_virtualenv):
         project_virtualenv=project_virtualenv)
 
 
-def deploy(env, verbose=False, project_virtualenv=None):
+SUPPORTED_PLAYBOOKS = [
+    'deploy.python.yml',
+    'deploy.static.yml',
+    'deploy.repository.yml',
+    'deploy.web.yml'
+]
+
+def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
+    gitdeploy_version = COMMON_CONFIG.get('gitdeploy_version')
+    if gitdeploy_version and gitdeploy_version != __version__:
+        print(FAIL + \
+            '\nThis project is designed for git-deploy version %s. Please ' \
+            'checkout the %s version branch before executing git-deploy or ' \
+            'use git-deploy wrapper for automated version management\n' \
+             % (gitdeploy_version, gitdeploy_version) \
+            + ENDC)
+        sys.exit(0)
     if COMMON_CONFIG['type'] == 'repository':
         deploy_repository_only(env, verbose)
         return
-    sync_local_repository(env, verbose)
-    deploy_repository(env, verbose)
-    deploy_application(env, verbose)
-    deploy_static(env, verbose, project_virtualenv)
-    deploy_web(env, verbose)
-    print('\nComplete')
+    if playbook is not None:
+        print('\nExecuting playbook: %s' % playbook)
+        if playbook not in SUPPORTED_PLAYBOOKS:
+            sys.exit("Unsupported playbook: %s. Options are: %s" % (
+                playbook, ', '.join(SUPPORTED_PLAYBOOKS)))
+        ansible_playbook(
+            env, playbook, verbose, project_virtualenv=project_virtualenv)
+    else:
+        sync_local_repository(env, verbose)
+        deploy_repository(env, verbose)
+        deploy_application(env, verbose)
+        deploy_static(env, verbose, project_virtualenv)
+        deploy_web(env, verbose)
+    print('\nDone')
 
 
 if __name__=='__main__':
     verbose = False
     project_virtualenv = os.environ['VIRTUAL_ENV']
+    playbook = None
     try:
         env = sys.argv[1]
     except IndexError:
@@ -147,4 +177,7 @@ if __name__=='__main__':
             verbose = True
         if arg.startswith('--project-virtualenv'):
             project_virtualenv = arg.split('=')[1]
-    deploy(env, verbose=verbose, project_virtualenv=project_virtualenv)
+        if arg.startswith('--playbook'):
+            playbook = arg.split('=')[1]
+    deploy(env, verbose=verbose, playbook=playbook,
+        project_virtualenv=project_virtualenv)
