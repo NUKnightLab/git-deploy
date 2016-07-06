@@ -19,6 +19,9 @@ WARNING = '\033[93m'
 FAIL = '\033[91m'
 ENDC = '\033[0m'
 
+ASSETS_DIR = os.environ.get('GIT_DEPLOY_ASSETS_DIR',
+    os.path.expanduser('~/.git-deploy'))
+
 
 def _sh(*args):
     return _check_output(args).decode('utf-8').strip()
@@ -39,11 +42,13 @@ def get_playbooks_dir():
 
 
 def get_vault_dir():
-    return os.environ.get('GIT_DEPLOY_VAULT_DIR', '~/.vault')
+    return os.environ.get('GIT_DEPLOY_VAULT_DIR',
+        os.path.join(ASSETS_DIR, 'vault')
 
 
 def get_vault_password_file():
-    return os.environ.get('GIT_DEPLOY_VAULT_PASSWORD_FILE', '~/.vault_password')
+    return os.environ.get('GIT_DEPLOY_VAULT_PASSWORD_FILE',
+        os.path.join(ASSETS_DIR, 'vault_password'))
 
 
 def get_project_path():
@@ -84,7 +89,8 @@ SUPPORTED_ENVIRONMENTS = COMMON_CONFIG['supported_envs']
 
 
 def ansible_playbook(env, playbook, verbose, **kwargs):
-    hostfile = os.environ.get('GIT_DEPLOY_INVENTORY', '')
+    hostfile = os.environ.get('GIT_DEPLOY_INVENTORY',
+        os.path.join(ASSETS_DIR, 'hosts'))
     playbook = os.path.join(get_playbooks_dir(), playbook)
     command = 'ansible-playbook'
     if verbose:
