@@ -43,7 +43,7 @@ def get_playbooks_dir():
 
 def get_vault_dir():
     return os.environ.get('GIT_DEPLOY_VAULT_DIR',
-        os.path.join(ASSETS_DIR, 'vault')
+        os.path.join(ASSETS_DIR, 'vault'))
 
 
 def get_vault_password_file():

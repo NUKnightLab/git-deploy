@@ -33,6 +33,13 @@ do
 DEPLOY_SCRIPT=$TARGET_DIR/git-deploy.py
 cd $ORIG_DIR
 
+if [ -z "$GIT_DEPLOY_VIRTUALENV" ]
+then
+    echo "setting deploy virtualenv"
+    GIT_DEPLOY_VIRTUALENV=$WORKON_HOME/git-deploy
+    echo "set to $GIT_DEPLOY_VIRTUALENV"
+fi
+
 echo "Switching from current virtualenv $VIRTUAL_ENV"
 ENV=$VIRTUAL_ENV
 . $GIT_DEPLOY_VIRTUALENV/bin/activate
