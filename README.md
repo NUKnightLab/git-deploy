@@ -17,10 +17,6 @@ have the same name)
 
   `--verbose` show a lot of extra information
 
-  Note: The previously available `--staticonly` option has been removed.
-  An option to run specific playbooks, including the static media playbook, is
-  being considered for future development.
-
   `--playbook=<playbook>` run a specific playbook. Currently supported playbooks
    are: deploy.python.yml, deploy.static.yml, 'deploy.repository.yml, deploy.web.yml
 
@@ -32,13 +28,13 @@ For working with a project that is already configured for git-deploy:
  1. Follow the **First Steps** section below, and go through **Additional Setup**
     for either **Python 2 & 3 Support** or **Python 2 Support Only**.
 
- 2. Place a hosts file in `/etc/ansible/hosts` or in the file indicated by
+ 2. Place a hosts file in `~/.git-deploy-assets` or in the file indicated by
     the `GIT_DEPLOY_INVENTORY` environment varable. See the **hosts**
     section below for file details.
 
  3. If your project has Ansible vaulted secrets, place them in a
-    project-specific directory under `~/.vault/projectname/vault.<env>.yml`.
-    Also set your vault password in the file `~/.vault_password` (See the
+    project-specific directory under `~/.git-deploy-assets/vault/projectname/vault.<env>.yml`.
+    Also set your vault password in the file `~/.git-deploy-assets/vault_password` (See the
     Advanced Usage section below for alternative file locations).
 
 For getting a new project configured for git-deploy, do all of the above, and
@@ -51,7 +47,7 @@ continue to follow the **Additional First-time setup for each project** section.
  * put one of these on your `PATH` as `git-deploy`
    - `git-deploy.wrapper.sh` for Python 2 & 3 support (see add'l setup below)
    - `git-deploy.py` for Python 2 support only (see add'l setup below)
- * place your hosts file in `/etc/ansible/` or set `GIT_DEPLOY_INVENTORY` to
+ * place your hosts file in `~/.git-deploy-assets` or set `GIT_DEPLOY_INVENTORY` to
    point to your hosts file. See below for host file format
 
 
@@ -77,7 +73,7 @@ A python 2 based virtualenvironment is required to execute Ansible.
 ## hosts (a.k.a inventory) file format
 
 
-Ansible will look in `/etc/ansible/hosts` for the default host inventory.
+git-deploy will look in `~/.git-deploy-assets/hosts` for the host inventory.
 
 git-deploy currently supports a single `app` role with multiple evironments.
 Support for further role-based deployment support is in the future roadmap.
@@ -129,10 +125,10 @@ Configuration parameters should be placed into either `config.common.yml` or
 `config.<env>.yml` as appropriate in the **deploy_config_dir** (usually `deploy`)
 relative to the project root. Configurations may freely reference other config
 parameters as required by passing the parameter as a template variable via
-{{ }}. 
+{{ }}.
 
 See `config-vars.md` and the example configs for more information about the
-specific parameters required and the Yaml configuration syntax. 
+specific parameters required and the Yaml configuration syntax.
 
 
 ## Advanced usage
@@ -141,6 +137,13 @@ specific parameters required and the Yaml configuration syntax.
 
 For project-specific settings, consider using virtualenvwrapper's
 postactivate hook for managing non-default environment variable settings.
+
+**GIT_DEPLOY_ASSETS_DIR**
+
+Default `~/.git-deploy-assets`. Sets the location of the assets directory which
+contains the hosts file, password file, and project vaults. The locations of
+these assets can also be specified individually with the `GIT_DEPLOY_INVENTORY`,
+`GIT_DEPLOY_VAULT_PASSWORD_FILE`, and `GIT_DEPLOY_VAULT_DIR` environment variables.
 
 **GIT_DEPLOY_INVENTORY**
 

@@ -20,7 +20,7 @@ FAIL = '\033[91m'
 ENDC = '\033[0m'
 
 ASSETS_DIR = os.environ.get('GIT_DEPLOY_ASSETS_DIR',
-    os.path.expanduser('~/.git-deploy'))
+    os.path.expanduser('~/.git-deploy-assets'))
 
 
 def _sh(*args):

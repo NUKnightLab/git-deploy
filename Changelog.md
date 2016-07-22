@@ -4,7 +4,7 @@
  explicitly set the enironment variables: GIT_DEPLOY_INVENTORY,
  GIT_DEPLOY_VAULT_DIR, and GIT_DEPLOY_VAULT_PASSWORD_FILE.
 
- * Added GIT_DEPLOY_ASSETS_DIR env var which defaults to ~/.git-deploy. This
+ * Added GIT_DEPLOY_ASSETS_DIR env var which defaults to ~/.git-deploy-assets. This
    now serves as a centralized default location for the hosts and vault_password
    files and for the vault directory containing vaults organized by projects.
  * Default inventory (hosts) location is no longer the Ansible default. Now:
