@@ -12,6 +12,7 @@
  * Default vault password file is now $GIT_DEPLOY_ASSETS_DIR/vault_password
  * Default vault directory (containing project-organized vaults) is now
    $GIT_DEPLOY_ASSETS_DIR/vault
+ * Added buildkit boolean parameter for executing `npm run dist` before static sync
 
 # 1.0.2
 

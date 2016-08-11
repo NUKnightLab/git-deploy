@@ -23,6 +23,12 @@ github_account: ___PUT_GITHUB_ACCOUNT_HERE___
 
 python: python3 # (python2|python3)
 type: django # (django|flask|other|repository)
+buildkit: false # optional param that effectively defaults to false. If true,
+                # will run `npm run dist` to build static deployments on a remote
+                # server. Be sure to set the static_dir accordingly (normally
+                # `{{ application_dir }}/dist`)
+                # Note that for static hosted sites in s3, static_dest should
+                # be the root of the bucket. See pullquote for reference implementation
 
 # These will be merged with deployment-specific env into init_env
 # The assumption here is that you are doing something like os.environ.get in
