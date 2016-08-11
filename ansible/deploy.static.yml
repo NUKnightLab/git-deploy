@@ -31,6 +31,13 @@
       args:
         chdir: "{{ application_dir }}"
 
+    - name: generate static dist files for Node project
+      run_once: true
+      when: buildkit is defined and buildkit == true
+      shell: "npm install; npm run dist"
+      args:
+        chdir: "{{ application_dir }}"
+
     - name: sync to s3
       when: static_dir is defined and static_service is defined and static_service == "s3"
       run_once: true
