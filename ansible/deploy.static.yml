@@ -19,28 +19,10 @@
 
   tasks:
 
-    #- name: set static path for Django project
-    #  when: type == "django" and static_tmpdir is defined
-    #  set_fact: static_dir={{ static_tmpdir }}
-
-    #- name: collect static files for Django project
-    #  when: type == "django" and static_tmpdir is defined
-    #  run_once: true
-    #  # we use the env_run_script to set any env vars that are required
-    #  shell: "{{ env_run_script }} manage.py collectstatic --noinput"
-    #  args:
-    #    chdir: "{{ application_dir }}"
-
-    - name: generate static dist files for Node project
-      run_once: static_service == "s3"
-      when: buildkit is defined and buildkit == true
-      shell: "npm install; npm run dist"
-      args:
-        chdir: "{{ application_dir }}"
-
     - name: prepare static files
-      when: static_prep_exec is defined
-      shell: "{{ static_prep_exec }}"
+      run_once: static_service == "s3"
+      when: static_prep is defined
+      shell: "{{ static_prep }}"
       args:
         chdir: "{{ application_dir }}"
 
@@ -56,8 +38,3 @@
     - name: sync to self-hosting
       when: static_dir is defined and static_service is not defined or static_service == ""
       shell: cp -r {{ static_dir }} {{ static_dest }}
-
-    #- name: remove temporary collecstatic directory
-    #  when: static_tmpdir is defined
-    #  file: path={{ static_tmpdir }} state=absent
-    #  run_once: true

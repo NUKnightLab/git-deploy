@@ -51,12 +51,16 @@ init_env_common:
 
 
 # Django specific configs
-django_settings_module: "core.settings.ec2"
-static_tmpdir: "/tmp/{{ project_name }}_static" # used to collecstatic before s3 sync
+#django_settings_module: "core.settings.ec2"
+#static_dir: "/tmp/{{ project_name }}_static" # used to collecstatic before s3 sync
+#static_prep: "{{ env_run_script }} manage.py collectstatic --noinput"
 
 # Flask specific configs
-static_dir: "{{ deploy_dir }}/static"
+#static_dir: "{{ deploy_dir }}/static"
 
+# Node specific configs
+#static_dir: "{{ application_dir }}/dist"
+#static_prep: "npm install; npm run dist"
 
 application_dir: "{{ deploy_dir }}" # application dir could be a subdirectory
 

@@ -1,3 +1,10 @@
+# 1.0.4
+
+ * Removed buildkit parameter
+ * Removed static_tmpdir for Django projects (use static_dir)
+ * Removed Django and Buildkit specific static functionality, replace with `static_prep`
+ * Added `static_prep` parameter for shell execution within `application_dir` prior to static sync
+
 # 1.0.3
 
  This version breaks backwards compatibility with any projects that do not
