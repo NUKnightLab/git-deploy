@@ -19,22 +19,28 @@
 
   tasks:
 
-    - name: set static path for Django project
-      when: type == "django" and static_tmpdir is defined
-      set_fact: static_dir={{ static_tmpdir }}
+    #- name: set static path for Django project
+    #  when: type == "django" and static_tmpdir is defined
+    #  set_fact: static_dir={{ static_tmpdir }}
 
-    - name: collect static files for Django project
-      when: type == "django" and static_tmpdir is defined
-      run_once: true
-      # we use the env_run_script to set any env vars that are required
-      shell: "{{ env_run_script }} manage.py collectstatic --noinput"
+    #- name: collect static files for Django project
+    #  when: type == "django" and static_tmpdir is defined
+    #  run_once: true
+    #  # we use the env_run_script to set any env vars that are required
+    #  shell: "{{ env_run_script }} manage.py collectstatic --noinput"
+    #  args:
+    #    chdir: "{{ application_dir }}"
+
+    - name: generate static dist files for Node project
+      run_once: static_service == "s3"
+      when: buildkit is defined and buildkit == true
+      shell: "npm install; npm run dist"
       args:
         chdir: "{{ application_dir }}"
 
-    - name: generate static dist files for Node project
-      run_once: true
-      when: buildkit is defined and buildkit == true
-      shell: "npm install; npm run dist"
+    - name: prepare static files
+      when: static_prep_exec is defined
+      shell: "{{ static_prep_exec }}"
       args:
         chdir: "{{ application_dir }}"
 
