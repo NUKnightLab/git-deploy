@@ -141,9 +141,10 @@ postactivate hook for managing non-default environment variable settings.
 **GIT_DEPLOY_ASSETS_DIR**
 
 Default `~/.git-deploy-assets`. Sets the location of the assets directory which
-contains the hosts file, password file, and project vaults. The locations of
-these assets can also be specified individually with the `GIT_DEPLOY_INVENTORY`,
-`GIT_DEPLOY_VAULT_PASSWORD_FILE`, and `GIT_DEPLOY_VAULT_DIR` environment variables.
+contains the hosts file, password file (`vault_password`), and project vaults.
+The locations of these assets can also be specified individually with the
+`GIT_DEPLOY_INVENTORY`, `GIT_DEPLOY_VAULT_PASSWORD_FILE`, and
+`GIT_DEPLOY_VAULT_DIR` environment variables.
 
 **GIT_DEPLOY_INVENTORY**
 

@@ -47,6 +47,8 @@ These variables are generally available for use in configuration
   * `static_dir` location of static files to be synced to s3. Not used if Django collectstatic is used
   * `static_dest` S3 endpoint or filesystem directory to copy static files into
   * `staticbucket` (deprecated) the s3 bucket to sync files into (<1.0.2 only. Use `static_dest` now)
+  * `buildkit` boolean (default false) to determine of `npm run dist` should be executed before static sync
+
 
 
 ## deploy.web.yml
