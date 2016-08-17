@@ -147,10 +147,11 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
             + ENDC)
         sys.exit(0)
     if COMMON_CONFIG['type'] == 'repository':
-        #deploy_repository_only(env, verbose)
+        sync_local_repository(env, verbose)
         deploy_repository(env, verbose)
         return
     elif COMMON_CONFIG['type'] == 'static':
+        sync_local_repository(env, verbose)
         deploy_repository(env, verbose)
         deploy_static(env, verbose, project_virtualenv)
         return
