@@ -103,6 +103,15 @@ additional steps:
    the `AWS setup for S3 static file deployment` section below for more information
 
 
+## Extra playbooks
+
+git-deploy has a set of builtin playbooks useful for most projects. Projects
+that require some extra work can use custom playbooks. These are standard
+Ansible playbooks that go in the deploy directory for the project and are
+named playbook.*.yml. Playbooks in that format will be automatically executed
+after the standard playbook set.
+
+
 ### AWS setup for S3 static file deployment
 
 Static file sync to S3 requires the AWS cli command to be installed and
