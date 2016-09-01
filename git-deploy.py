@@ -8,6 +8,7 @@ If you require support for Python3 projects or non-python projects or for
 using specific versions of git-deploy itsef, call this via the provided
 `git-deploy.wrapper.sh`. See the included README for details.
 """
+import glob
 import os
 import sys
 from subprocess import check_output as _check_output
@@ -91,7 +92,9 @@ SUPPORTED_ENVIRONMENTS = COMMON_CONFIG['supported_envs']
 def ansible_playbook(env, playbook, verbose, **kwargs):
     hostfile = os.environ.get('GIT_DEPLOY_INVENTORY',
         os.path.join(ASSETS_DIR, 'hosts'))
-    playbook = os.path.join(get_playbooks_dir(), playbook)
+    playbooks_dir = get_playbooks_dir()
+    if not playbook.startswith(os.sep):
+        playbook = os.path.join(playbooks_dir, playbook)
     command = 'ansible-playbook'
     if verbose:
         command += ' -vvv'
@@ -101,6 +104,7 @@ def ansible_playbook(env, playbook, verbose, **kwargs):
     command += ' -e project_root=%s' % get_project_path()
     command += ' -e config_dir=%s' % get_config_dir()
     command += ' -e vault_dir=%s' % get_vault_dir()
+    command += ' -e playbooks_dir=%s' % playbooks_dir
     for k,v in kwargs.items():
         command += ' -e %s=%s' % (k,v)
     command += ' %s' % playbook
@@ -127,6 +131,11 @@ def deploy_web(env, verbose):
 def deploy_static(env, verbose, project_virtualenv):
     ansible_playbook(env, 'deploy.static.yml', verbose,
         project_virtualenv=project_virtualenv)
+
+
+def deploy_extras(env, verbose):
+    for fn in glob.glob(os.path.join(get_config_dir(), 'playbook*.yml')):
+        ansible_playbook(env, fn, verbose)
 
 
 SUPPORTED_PLAYBOOKS = [
@@ -168,6 +177,7 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
         deploy_application(env, verbose)
         deploy_static(env, verbose, project_virtualenv)
         deploy_web(env, verbose)
+        deploy_extras(env, verbose)
     print('\nDone')
 
 
