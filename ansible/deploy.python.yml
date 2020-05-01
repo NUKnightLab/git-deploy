@@ -1,4 +1,4 @@
-- hosts: "{{ env }}-app"
+- hosts: "{{ env }}_app"
   # beer ransom for whoever figures out how to make these vars_files optional so
   # that we don't need empty vault files for projects with no secrets
   vars_files:

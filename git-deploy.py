@@ -97,7 +97,7 @@ def ansible_playbook(env, playbook, verbose, **kwargs):
         playbook = os.path.join(playbooks_dir, playbook)
     command = 'ansible-playbook'
     if verbose:
-        command += ' -vvv'
+        command += ' -vvvv'
     if hostfile:
         command += ' -i %s' % hostfile
     command += ' -e env=%s' % env
@@ -109,6 +109,7 @@ def ansible_playbook(env, playbook, verbose, **kwargs):
         command += ' -e %s=%s' % (k,v)
     command += ' %s' % playbook
     command += ' --vault-password-file %s' % get_vault_password_file()
+    print('COMMAND:', command)
     call(command)
 
 
@@ -183,7 +184,7 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
 
 if __name__=='__main__':
     verbose = False
-    project_virtualenv = os.environ['VIRTUAL_ENV']
+    project_virtualenv = os.environ.get('VIRTUAL_ENV')
     playbook = None
     try:
         env = sys.argv[1]

@@ -18,7 +18,7 @@ several similarly annotated parameters in config.prd.yml and config.stg.yml
 """
 project_name: ___PUT_PROJECT_NAME_HERE___
 application_user: ___PUT_APPLICATION_USERNAME_HERE___
-port: ___PUT_PORT_NUMBER_HERE___
+application_port: ___PUT_PORT_NUMBER_HERE___
 github_account: ___PUT_GITHUB_ACCOUNT_HERE___
 
 python: python3 # (python2|python3)

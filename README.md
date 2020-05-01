@@ -20,7 +20,6 @@ have the same name)
   `--playbook=<playbook>` run a specific playbook. Currently supported playbooks
    are: deploy.python.yml, deploy.static.yml, 'deploy.repository.yml, deploy.web.yml
 
-
 ## Getting started checklist
 
 For working with a project that is already configured for git-deploy:
@@ -42,6 +41,8 @@ continue to follow the **Additional First-time setup for each project** section.
 
 
 ## First Steps
+
+**Note:** Ansible now supports Python 3. `git-deploy.wrapper.sh` is thus deprecated.
 
  * Clone this repository
  * put one of these on your `PATH` as `git-deploy`
@@ -223,8 +224,8 @@ a pemfile, you should create a ~/.ssh/config file such as:
 
 ```
 Host *.<domain>.com
-User apps
-IdentityFile ~/mypemfile.pem
+    User apps
+    IdentityFile ~/mypemfile.pem
 ```
 
 ### Single system user

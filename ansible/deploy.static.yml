@@ -1,4 +1,4 @@
-- hosts: "{{ env }}-app"
+- hosts: "{{ env }}_app"
   vars_files:
     - "{{ config_dir }}/config.common.yml"
     - "{{ config_dir }}/config.{{ env }}.yml"
