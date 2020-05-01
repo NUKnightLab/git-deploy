@@ -3,6 +3,7 @@
  * git-deploy.wrapper.sh and Python 2 support is deprecated 
  * Host groups now use `_` in lieu of `-` for ansible naming compliance
  * `port` variable for Nginx config is now called `application_port` for ansible reserved word compliance
+ * Adds support for docker-compose based container build, deprecates python-specific app support and utils
 
 # 1.0.4
 

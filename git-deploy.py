@@ -121,6 +121,10 @@ def deploy_repository(env, verbose):
     ansible_playbook(env, 'deploy.repository.yml', verbose)
 
 
+def build_containers(env, verbose):
+    ansible_playbook(env, 'build.containers.yml', verbose)
+
+
 def deploy_application(env, verbose):
     ansible_playbook(env, 'deploy.python.yml', verbose)
 
@@ -175,10 +179,15 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
     else:
         sync_local_repository(env, verbose)
         deploy_repository(env, verbose)
-        deploy_application(env, verbose)
-        deploy_static(env, verbose, project_virtualenv)
-        deploy_web(env, verbose)
-        deploy_extras(env, verbose)
+        if COMMON_CONFIG.get('docker_compose_file'):
+            build_containers(env, verbose)
+            ansible_playbook(env, 'deploy.web.1.05.yml', verbose)
+        else:
+            print('No containers to build. Deploying legacy application ...')
+            deploy_application(env, verbose)
+            deploy_static(env, verbose, project_virtualenv)
+            deploy_web(env, verbose)
+        #deploy_extras(env, verbose)
     print('\nDone')
 
 

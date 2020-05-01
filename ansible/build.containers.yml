@@ -15,10 +15,9 @@
   #version={{ env }}
 
   tasks:
-    - name: clone/pull project repo
-      git:
-        repo={{ project_repo }}
-        dest={{ deploy_dir }}
-        accept_hostkey=yes
-        version=dockerize
-        key_file={{ git_key_file if git_key_file is defined else None }}
+    - name: build containers
+      docker_compose:
+        build: yes
+        files:
+          - "{{ docker_compose_file }}"
+        project_src: "{{ deploy_dir }}"
