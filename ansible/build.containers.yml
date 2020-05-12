@@ -8,16 +8,26 @@
   become_user: "{{ application_user }}"
   become_method: sudo
 
-  # Deploy the environment deployment branch to remote hosts. This play does
-  # not handle sync/update from development to deployment branches or push
-  # to remote repository -- run local.repository.yml for that
+  # Build containers from the compose file
 
   #version={{ env }}
 
   tasks:
+    - name: create env setup script
+      template:
+        src=templates/dotenv.j2
+        dest="{{ deploy_dir }}/.env"
     - name: build containers
       docker_compose:
         build: yes
+        restarted: yes
         files:
           - "{{ docker_compose_file }}"
         project_src: "{{ deploy_dir }}"
+    - name: run setup scripts
+      with_items: "{{ run_commands }}"
+      shell: "docker-compose -f {{ docker_compose_file }} run {{ item }}"
+      args:
+        chdir: "{{ deploy_dir }}"
+    - name: restart nginx
+      shell: "sudo systemctl restart nginx"

@@ -18,7 +18,7 @@
 
   tasks:
     - name: symlink nginx config
-      shell: sudo ln -sf {{ deploy_dir }}/{{ project_name }}.nginx /etc/nginx/sites-enabled/{{ project_name }}.nginx
+      shell: sudo ln -sf {{ nginx_conf }} /etc/nginx/sites-enabled/{{ project_name }}
       notify:
       - restart nginx
 
