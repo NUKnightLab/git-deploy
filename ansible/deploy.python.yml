@@ -33,10 +33,10 @@
         dest="{{ env_run_script }}"
         mode=u+rwx
 
-    - name: copy upstart config
+    - name: copy systemd config
       template:
-        src=templates/upstart.j2
-        dest=/etc/init/{{ service_name }}.conf
+        src=templates/systemd.j2
+        dest=/etc/systemd/system/{{ service_name }}.service
       notify:
       - restart appserver
       - restart nginx
@@ -71,12 +71,12 @@
     # Be sure service permissions are accessible by ansible user
     - name: make sure application server is running
       #  should we be using shell or command here instead of raw?
-      raw: if (sudo service {{ service_name }} status|grep stop); then sudo service {{ service_name }} start; fi
+      raw: if (sudo systemctl status {{ service_name }} |grep Stop); then sudo systemctl start {{ service_name }} ; fi
 
 
   handlers:
     - name: restart appserver
-      raw: sudo service {{ service_name }} restart
+      raw: sudo systemctl restart {{ service_name }}
     - name: restart nginx
       shell: sudo systemctl restart nginx
         warn=False
