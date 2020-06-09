@@ -77,3 +77,6 @@
   handlers:
     - name: restart appserver
       raw: sudo service {{ service_name }} restart
+    - name: restart nginx
+      shell: sudo systemctl restart nginx
+        warn=False

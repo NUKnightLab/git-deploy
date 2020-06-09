@@ -20,5 +20,5 @@
         repo={{ project_repo }}
         dest={{ deploy_dir }}
         accept_hostkey=yes
-        version=dockerize
+        version={{ env }}
         key_file={{ git_key_file if git_key_file is defined else None }}
