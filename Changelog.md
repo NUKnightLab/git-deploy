@@ -4,6 +4,8 @@
  * Host groups now use `_` in lieu of `-` for ansible naming compliance
  * `port` variable for Nginx config is now called `application_port` for ansible reserved word compliance
  * Adds support for docker-compose based container build, deprecates python-specific app support and utils
+ * Replaces upstart with systemd. Upstart no longer supported.
+ * Replaces env.sh and env-run script with .env file
 
 # 1.0.4
 

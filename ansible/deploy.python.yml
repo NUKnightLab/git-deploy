@@ -23,15 +23,9 @@
     - name: create env setup script
       template:
         src=templates/env.j2
-        dest="{{ env_setup_script }}"
+        dest="{{ env_file }}"
       notify:
       - restart appserver
-
-    - name: create env_run script
-      template:
-        src=templates/env_run.j2
-        dest="{{ env_run_script }}"
-        mode=u+rwx
 
     - name: copy systemd config
       template:
@@ -58,7 +52,7 @@
     - name: django migrate
       when: type == "django" and (django_migrate is undefined or django_migrate)
       # django manage.py command does not support env vars, thus shell instead
-      shell: "{{ env_run_script }} manage.py migrate --noinput"
+      shell: "export $(grep -v '^#' .env | xargs -d '\n'); manage.py migrate --noinput"
       args:
         chdir: "{{ application_dir }}"
 
