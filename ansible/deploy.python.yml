@@ -9,6 +9,7 @@
   become: yes
   become_user: "{{ application_user }}"
   become_method: sudo
+  
 
   # For whatever reason, for new deployments, it seems like nginx is not
   # getting restarted at the right time. Thus for new deploys only, it is
@@ -20,20 +21,26 @@
 
   tasks:
 
-    - name: create env setup script
+    - name: Template env setup script
       template:
-        src=templates/env.j2
-        dest="{{ env_file }}"
+        src: templates/env.j2
+        dest: "{{ env_file }}"
       notify:
-      - restart appserver
+        - restart appserver
 
-    - name: copy systemd config
+    - name: Template systemd config
       template:
-        src=templates/systemd.j2
-        dest=/etc/systemd/system/{{ service_name }}.service
+        src: templates/systemd.j2
+        dest: "/etc/systemd/system/{{ service_name }}.service"
+        owner: root
+        group: root
+        mode: 0644
+      become: yes
+      become_user: root
+      become_method: sudo
       notify:
-      - restart appserver
-      - restart nginx
+        - restart appserver
+        - restart nginx
 
     - name: install python packages
       pip:
@@ -41,8 +48,8 @@
         virtualenv={{ virtualenv }}
         virtualenv_python={{ python }}
       notify:
-      - restart appserver
-      - restart nginx
+        - restart appserver
+        - restart nginx
 
     - name: set project location in virtual environment
       template:
@@ -52,7 +59,7 @@
     - name: django migrate
       when: type == "django" and (django_migrate is undefined or django_migrate)
       # django manage.py command does not support env vars, thus shell instead
-      shell: "export $(grep -v '^#' .env | xargs -d '\n'); manage.py migrate --noinput"
+      shell: "{{ env_run_script }} ./manage.py migrate --noinput"
       args:
         chdir: "{{ application_dir }}"
 
