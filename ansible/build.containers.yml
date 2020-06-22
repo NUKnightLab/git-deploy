@@ -25,6 +25,7 @@
           - "{{ docker_compose_file }}"
         project_src: "{{ deploy_dir }}"
     - name: run setup scripts
+      when: run_commands is defined
       with_items: "{{ run_commands }}"
       shell: "docker-compose -f {{ docker_compose_file }} run {{ item }}"
       args:
