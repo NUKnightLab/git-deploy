@@ -5,10 +5,12 @@
     - "{{ config_dir }}/config.common.yml"
     - "{{ config_dir }}/config.{{ env }}.yml"
     - "{{ vault_dir }}/{{ project_name }}/vault.{{ env }}.yml"
-  gather_facts: false
+  gather_facts: true
   become: yes
   become_user: "{{ application_user }}"
   become_method: sudo
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/{{ application_user }}/.pyenv/shims"
   
 
   # For whatever reason, for new deployments, it seems like nginx is not
@@ -33,8 +35,8 @@
         src: templates/envrc.j2
         dest: "{{ envrc_file }}"
       notify:
-        - restart appserver
         - allow envrc
+        - restart appserver
 
     - name: Template systemd config
       template:
@@ -54,7 +56,7 @@
       pip:
         requirements={{ requirements_file }}
         virtualenv={{ virtualenv }}
-        virtualenv_python={{ python }}
+        virtualenv_command="{{ python }} -m venv --prompt {{ project_name }}"
       notify:
         - restart appserver
         - restart nginx

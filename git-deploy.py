@@ -182,6 +182,7 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
         if COMMON_CONFIG.get('gitdeploy_version') == '1.0.5':
             if COMMON_CONFIG.get('docker_compose_file'):
                 build_containers(env, verbose)
+                ansible_playbook(env, 'deploy.web.1.05.yml', verbose)
             else:
                 print('No containers to build. Deploying legacy application ...')
                 deploy_application(env, verbose)
