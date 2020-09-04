@@ -17,6 +17,9 @@
   # Requires the AWS cli configured for S3 sync on the remote host delegated
   # for these tasks
 
+  # The defined checks below don't really seem to be working, so some of these
+  # variables may need to be defined even when not used.
+
   tasks:
 
     - name: prepare static files
