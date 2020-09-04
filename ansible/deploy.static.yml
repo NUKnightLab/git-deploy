@@ -27,14 +27,14 @@
         chdir: "{{ application_dir }}"
 
     - name: sync to s3
-      when: static_dir is defined and static_service is defined and static_service == "s3"
+      when: static_dir is defined and static_dest is defined and static_service is defined and static_service == "s3"
       run_once: true
       shell: aws s3 sync --acl public-read {{ static_dir }} {{ static_dest }}
 
     - name: ensure self-hosting static directory
-      when: static_dir is defined and static_service is not defined or static_service == ""
+      when: static_dest is defined and static_service is not defined or static_service == ""
       file: path={{ static_dest }} state=directory recurse=true
 
     - name: sync to self-hosting
-      when: static_dir is defined and static_service is not defined or static_service == ""
+      when: static_dir is defined and static_dest is defined and static_service is not defined or static_service == ""
       shell: cp -r {{ static_dir }} {{ static_dest }}
