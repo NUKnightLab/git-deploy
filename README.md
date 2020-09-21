@@ -28,8 +28,7 @@ have the same name)
 
 For working with a project that is already configured for git-deploy:
 
- 1. Follow the **First Steps** section below, and go through **Additional Setup**
-    for either **Python 2 & 3 Support** or **Python 2 Support Only**.
+ 1. Follow the **First Steps** section below to install Ansible and git-deploy
 
  2. Place a hosts file in `~/.git-deploy-assets` or in the file indicated by
     the `GIT_DEPLOY_INVENTORY` environment varable. See the **hosts**
