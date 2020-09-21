@@ -1,5 +1,9 @@
 # TBD
 
+ * Removes deprecated Python 2 wrapper and related documentation
+
+# 1.0.5 (2020-09-21)
+
  * git-deploy.wrapper.sh and Python 2 support is deprecated 
  * Host groups now use `_` in lieu of `-` for ansible naming compliance
  * `port` variable for Nginx config is now called `application_port` for ansible reserved word compliance

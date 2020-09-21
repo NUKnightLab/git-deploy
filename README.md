@@ -1,9 +1,13 @@
 # git-deploy
 
 An Ansible-based git-subcommand deployment script with support for projects in
-Python 2 and 3 (potentially for non-python projects also). See the
-**Project organization** section at the end of this README if you are not sure
-if git-deploy is right your project's deployment needs.
+Python 3 (potentially for non-python projects also, but not yet supported as
+such). See the **Project organization** section at the end of this README if
+you are not sure if git-deploy is right your project's deployment needs.
+
+`git-deploy` is mostly just some opinionated scaffolding around Ansible. 
+Ansible knowledge is helpful for debugging and working through issues, but
+should not be a necessary requirement.
 
 
 ## Usage:
@@ -42,33 +46,27 @@ continue to follow the **Additional First-time setup for each project** section.
 
 ## First Steps
 
-**Note:** Ansible now supports Python 3. `git-deploy.wrapper.sh` is thus deprecated.
+### Install Ansible
+
+You may choose to install Ansible globally, ie. in the user context:
+
+```
+ $ pip install --user ansible
+```
+
+Or, you can install on a per-project basis into your project's virtualenv
+provided your project Python is compatible with your version of Ansible.
+We are currently only supporting Python 3 variants, with Ansible >= 2.9.9.
+
+### Clone git-deploy and make it path executable
 
  * Clone this repository
- * put one of these on your `PATH` as `git-deploy`
-   - `git-deploy.wrapper.sh` for Python 2 & 3 support (see add'l setup below)
-   - `git-deploy.py` for Python 2 support only (see add'l setup below)
- * place your hosts file in `~/.git-deploy-assets` or set `GIT_DEPLOY_INVENTORY` to
+ * Put the git-deploy.py executable on your `PATH` as `git-deploy`.
+
+   e.g.: `ln -s ~/repos/git-deploy/git-deploy.py /usr/local/bin/git-deploy`
+
+ * Place your hosts file in `~/.git-deploy-assets` or set `GIT_DEPLOY_INVENTORY` to
    point to your hosts file. See below for host file format
-
-
-## Additional setup
-
-
-### Python 2 & 3 support (with `git-deploy.wrapper.sh` as executable)
-
-A python 2 based virtualenvironment is required to execute Ansible.
-
- * create a new Python 2 virtualenvironment, e.g. `virtualenv ansible`
- * set your GIT_DEPLOY_VIRTUALENV variable to point to the new virtualenv
- * `pip install ansible` into this virtualenvironment
-
-
-### Python 2 support only (with `git-deploy.py` as executable)
- * you may install Ansible into your project virtualenvs via:
-   `pip install ansible`
- * alternatively install Ansible into your system environment via:
-   `sudo pip install ansible`
 
 
 ## hosts (a.k.a inventory) file format
