@@ -26,6 +26,20 @@ have the same name)
 
 ## Getting started checklist
 
+### New install for git-deploy >= 1.0.6
+
+```
+ $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git
+```
+
+To install a specific version:
+
+```
+ $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git@poetry_setu
+```
+
+### Legacy install for git-deploy <= 1.0.5
+
 For working with a project that is already configured for git-deploy:
 
  1. Follow the **First Steps** section below to install Ansible and git-deploy
