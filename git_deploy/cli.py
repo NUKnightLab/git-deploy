@@ -190,7 +190,7 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
     print('\nDone')
 
 
-if __name__=='__main__':
+def main():
     verbose = False
     project_virtualenv = os.environ.get('VIRTUAL_ENV')
     playbook = None
@@ -212,3 +212,7 @@ if __name__=='__main__':
             playbook = arg.split('=')[1]
     deploy(env, verbose=verbose, playbook=playbook,
         project_virtualenv=project_virtualenv)
+
+
+if __name__=='__main__':
+    main()
