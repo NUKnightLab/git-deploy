@@ -3,10 +3,6 @@
 git subcommand to remotely deploy projects. Manages merging of git branches.
 Uses Ansible for the heavy lifting of deploying branches to remote servers,
 restarting appropriate services, and syncing static media to S3.
-
-If you require support for Python3 projects or non-python projects or for
-using specific versions of git-deploy itsef, call this via the provided
-`git-deploy.wrapper.sh`. See the included README for details.
 """
 import glob
 import os
@@ -155,10 +151,8 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
     if gitdeploy_version and gitdeploy_version != __version__:
         print(FAIL + \
             '\nThis project is designed for git-deploy version %s. Please ' \
-            'checkout the %s version branch before executing git-deploy or ' \
-            'use git-deploy wrapper for automated version management\n' \
-             % (gitdeploy_version, gitdeploy_version) \
-            + ENDC)
+            'checkout the %s version branch of git-deploy before executing.' % (
+            gitdeploy_version, gitdeploy_version) + ENDC)
         sys.exit(0)
     if COMMON_CONFIG['type'] == 'repository':
         sync_local_repository(env, verbose)
