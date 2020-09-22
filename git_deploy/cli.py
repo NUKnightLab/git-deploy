@@ -190,7 +190,7 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
     print('\nDone')
 
 
-if __name__=='__main__':
+def main():
     verbose = False
     project_virtualenv = os.environ.get('VIRTUAL_ENV')
     playbook = None
@@ -212,3 +212,26 @@ if __name__=='__main__':
             playbook = arg.split('=')[1]
     deploy(env, verbose=verbose, playbook=playbook,
         project_virtualenv=project_virtualenv)
+
+
+import click
+
+
+@click.group()
+@click.version_option()
+def cli():
+    "Ansible-based git-subcommand deployment"
+
+
+@cli.command(name="command")
+@click.argument(
+    "example"
+)
+@click.option(
+    "-o",
+    "--option",
+    help="An example option",
+)
+def first_command(example, option):
+    "Command description goes here"
+    click.echo("Here is some output")

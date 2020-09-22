@@ -26,6 +26,20 @@ have the same name)
 
 ## Getting started checklist
 
+### New pip install for git-deploy >= 1.0.6
+
+```
+ $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git
+```
+
+To install a specific version, e.g.:
+
+```
+ $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git@1.0.6
+```
+
+### Legacy setup for git-deploy <= 1.0.5
+
 For working with a project that is already configured for git-deploy:
 
  1. Follow the **First Steps** section below to install Ansible and git-deploy
@@ -230,3 +244,23 @@ Host *.<domain>.com
 A single system user is set to handle application management, git deployment,
 service starting, etc. This username is specified via the `application_user`
 parameter
+
+## Development
+
+Install as editable (-e).
+
+
+```
+ $ pip install -e '.[test]'
+```
+
+If using virtualenvironments, be sure your setup allows the venv to remain
+sourced across projects so that git-deploy can be used within the context of
+deployable projects.
+
+The simpler thing to do is probably deploy into user scope:
+
+```
+ $ pip install --user -e '.[test]'
+```
+
