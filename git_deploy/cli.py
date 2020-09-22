@@ -199,6 +199,8 @@ def main():
     except IndexError:
         usage()
         sys.exit(0)
+    if env == '--version':
+        print('git-deploy version: ', __version__)
     if env not in SUPPORTED_ENVIRONMENTS:
         usage()
         sys.exit(0)
