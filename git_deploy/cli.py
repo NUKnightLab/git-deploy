@@ -10,7 +10,7 @@ import sys
 from subprocess import check_output as _check_output
 from subprocess import call as _call
 import yaml
-from version import __version__
+from . import __version__
 
 WARNING = '\033[93m'
 FAIL = '\033[91m'
