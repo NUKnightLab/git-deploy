@@ -90,9 +90,9 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
     # https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
     #hostfile = os.environ.get('GIT_DEPLOY_INVENTORY',
     #    os.path.join(ASSETS_DIR, 'hosts'))
-    playbooks_dir = get_playbooks_dir()
-    if not playbook.startswith(os.sep):
-        playbook = os.path.join(playbooks_dir, playbook)
+    #playbooks_dir = get_playbooks_dir()
+    #if not playbook.startswith(os.sep):
+    #    playbook = os.path.join(playbooks_dir, playbook)
     command = 'ansible-playbook'
     #if verbose:
     #    command += ' -vvvv'
@@ -104,7 +104,7 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
     command += ' -e project_root=%s' % get_project_path()
     command += ' -e config_dir=%s' % get_config_dir()
     command += ' -e vault_dir=%s' % get_vault_dir()
-    command += ' -e playbooks_dir=%s' % playbooks_dir
+    #command += ' -e playbooks_dir=%s' % playbooks_dir
     for k,v in kwargs.items():
         command += ' -e %s=%s' % (k,v)
     command += ' %s' % playbook
@@ -113,28 +113,15 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
     call(command)
 
 
-def sync_local_repository(env, *ansible_args):
-    ansible_playbook(env, 'local.repository.yml', *ansible_args, merge_from=SUPPORTED_ENVIRONMENTS[env])
+def playbook_path(name):
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'ansible')
+    return os.path.join(path, name)
 
 
-def deploy_repository(env, version, *ansible_args):
-    ansible_playbook(env, 'deploy.repository.yml', *ansible_args, version=version)
+def builtin_playbook(env, playbook_name, *ansible_args):
+    playbook = playbook_path(playbook_name)
+    ansible_playbook(env, playbook, *ansible_args, merge_from=SUPPORTED_ENVIRONMENTS[env])
 
-
-def build_containers(env, *ansible_args):
-    ansible_playbook(env, 'build.containers.yml', *ansible_args)
-
-
-def deploy_application(env, *ansible_args):
-    ansible_playbook(env, 'deploy.python.yml', *ansible_args)
-
-
-def deploy_web(env, *ansible_args):
-    ansible_playbook(env, 'deploy.web.yml', *ansible_args)
-
-
-def deploy_static(env, project_virtualenv, *ansible_args):
-    ansible_playbook(env, 'deploy.static.yml', project_virtualenv=project_virtualenv)
 
 
 def deploy_extras(env, *ansible_args):
@@ -158,13 +145,13 @@ def deploy(env, version, *ansible_args, project_virtualenv=None, playbook=None):
             gitdeploy_version, gitdeploy_version) + ENDC)
         sys.exit(0)
     if COMMON_CONFIG['type'] == 'repository':
-        sync_local_repository(env, *ansible_args)
-        deploy_repository(env, version, *ansible_args)
+        builtin_playbook(env, 'local.repository.yml', *ansible_args)
+        builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
         return
     elif COMMON_CONFIG['type'] == 'static':
-        sync_local_repository(env, *ansible_args)
-        deploy_repository(env, version, *ansible_args)
-        deploy_static(env, project_virtualenv, *ansible_args)
+        builtin_playbook(env, 'local.repository.yml', *ansible_args)
+        builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
+        builtin_playbook(env, 'deploy.static.yml', *ansible_args)
         return
     if playbook is not None:
         print('\nExecuting playbook: %s' % playbook)
@@ -174,16 +161,16 @@ def deploy(env, version, *ansible_args, project_virtualenv=None, playbook=None):
         ansible_playbook(
             env, playbook, *ansible_args, project_virtualenv=project_virtualenv)
     else:
-        sync_local_repository(env, *ansible_args)
-        deploy_repository(env, version, *ansible_args)
+        builtin_playbook(env, 'local.repository.yml', *ansible_args)
+        builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
         if COMMON_CONFIG.get('docker_compose_file'):
-            build_containers(env, *ansible_args)
-            ansible_playbook(env, 'deploy.web.1.05.yml', *ansible_args)
+            builtin_playbook(env, 'build.containers.yml', *ansible_args)
+            builtin_playbook(env, 'deploy.web.1.05.yml', *ansible_args)
         else:
             print('No containers to build. Deploying legacy application ...')
-            deploy_application(env, *ansible_args)
-            deploy_static(env, project_virtualenv, *ansible_args)
-            ansible_playbook(env, 'deploy.web.1.05.yml', *ansible_args)
+            builtin_playbook(env, 'deploy.python.yml', *ansible_args)
+            builtin_playbook(env, 'deploy.static.yml', *ansible_args)
+            builtin_playbook(env, 'deploy.web.1.05.yml', *ansible_args)
     print('\nDone')
 
 
@@ -216,5 +203,6 @@ def cli(ctx, env, project_version, x):
     PROJECT_VERSION is either HEAD, or a branch or tag name.
     """
     ansible_args = ctx.args 
+    ansible_args.extend(['-e', f'project_version={project_version}'])
     print('Passing arguments to ansible commands: %s\n' % ' '.join(ansible_args))
     main(env, project_version, *ansible_args)
