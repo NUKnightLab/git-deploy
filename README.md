@@ -38,6 +38,15 @@ To install a specific version, e.g.:
  $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git@1.0.6
 ```
 
+git-deploy now uses standard ansible configurations for configuration management.
+This means:
+
+ * Unless otherwise specified, the inventory file is /etc/ansible/hosts
+ * Specify project-specific configurations in an ansible config file indicated by the ANSIBLE_CONFIG environment variable (https://docs.ansible.com/ansible/latest/reference_appendices/config.html)
+ * The following environment variables are no longer supported:
+    - GIT_DEPLOY_INVENTORY
+
+
 ### Legacy setup for git-deploy <= 1.0.5
 
 For working with a project that is already configured for git-deploy:
