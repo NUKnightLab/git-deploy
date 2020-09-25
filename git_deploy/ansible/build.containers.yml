@@ -1,0 +1,34 @@
+- hosts: "{{ env }}"
+  vars_files:
+    - "{{ config_dir }}/config.common.yml"
+    - "{{ config_dir }}/config.{{ env }}.yml"
+    - "{{ vault_dir }}/{{ project_name }}/vault.{{ env }}.yml"
+  gather_facts: false
+  become: yes
+  become_user: "{{ application_user }}"
+  become_method: sudo
+
+  # Build containers from the compose file
+
+  #version={{ env }}
+
+  tasks:
+    - name: create env setup script
+      template:
+        src=templates/dotenv.j2
+        dest="{{ deploy_dir }}/.env"
+    - name: build containers
+      docker_compose:
+        build: yes
+        restarted: yes
+        files:
+          - "{{ docker_compose_file }}"
+        project_src: "{{ deploy_dir }}"
+    - name: run setup scripts
+      when: run_commands is defined
+      with_items: "{{ run_commands }}"
+      shell: "docker-compose -f {{ docker_compose_file }} run {{ item }}"
+      args:
+        chdir: "{{ deploy_dir }}"
+    - name: restart nginx
+      shell: "sudo systemctl restart nginx"

@@ -1,0 +1,5 @@
+{% if init_env is defined %}
+{% for k,v in init_env.items() %}
+{{ k }}={{ v|replace('"','\\"') }}
+{% endfor %}
+{% endif %}

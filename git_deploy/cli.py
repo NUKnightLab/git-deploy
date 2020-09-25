@@ -220,13 +220,11 @@ from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
 @click.command()
 @click.version_option()
 @click.option('-e', '--env', required=True, help='Deployment environment') 
-@click.option('-h', '--host', required=True, help='Host of deployment destination') 
-
 @optgroup.group('branch/tag to deploy', cls=RequiredMutuallyExclusiveOptionGroup, 
                 help='the branch or tag to deploy')
 @optgroup.option('-b', '--branch', help='Branch to deploy')
 @optgroup.option('-t', '--tag', help='Tag to deploy')
 @click.option('-v', '--verbose', is_flag=True, help='Verbose output')
-def cli(env, host, branch, tag, verbose):
+def cli(env, branch, tag, verbose):
     "Ansible-based git-subcommand deployment"
     main(env, verbose=verbose)
