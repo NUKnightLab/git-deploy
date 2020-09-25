@@ -113,8 +113,8 @@ def sync_local_repository(env, verbose):
     ansible_playbook(env, 'local.repository.yml', verbose, merge_from=SUPPORTED_ENVIRONMENTS[env])
 
 
-def deploy_repository(env, verbose):
-    ansible_playbook(env, 'deploy.repository.yml', verbose)
+def deploy_repository(env, version, verbose):
+    ansible_playbook(env, 'deploy.repository.yml', verbose, version=version)
 
 
 def build_containers(env, verbose):
@@ -146,7 +146,7 @@ SUPPORTED_PLAYBOOKS = [
     'deploy.web.yml'
 ]
 
-def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
+def deploy(env, version, verbose=False, project_virtualenv=None, playbook=None):
     gitdeploy_version = COMMON_CONFIG.get('gitdeploy_version')
     if gitdeploy_version and gitdeploy_version != __version__:
         print(FAIL + \
@@ -156,11 +156,11 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
         sys.exit(0)
     if COMMON_CONFIG['type'] == 'repository':
         sync_local_repository(env, verbose)
-        deploy_repository(env, verbose)
+        deploy_repository(env, version, verbose)
         return
     elif COMMON_CONFIG['type'] == 'static':
         sync_local_repository(env, verbose)
-        deploy_repository(env, verbose)
+        deploy_repository(env, version, verbose)
         deploy_static(env, verbose, project_virtualenv)
         return
     if playbook is not None:
@@ -172,7 +172,7 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
             env, playbook, verbose, project_virtualenv=project_virtualenv)
     else:
         sync_local_repository(env, verbose)
-        deploy_repository(env, verbose)
+        deploy_repository(env, version, verbose)
         #if COMMON_CONFIG.get('gitdeploy_version') == '1.0.5':
         if COMMON_CONFIG.get('docker_compose_file'):
             build_containers(env, verbose)
@@ -190,26 +190,10 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
     print('\nDone')
 
 
-def main(env, verbose=False):
+def main(env, version, verbose=False):
     project_virtualenv = os.environ.get('VIRTUAL_ENV')
     playbook = None # TODO: support specific playbooks
-    #try:
-    #    env = sys.argv[1]
-    #except IndexError:
-    #    usage()
-    #    sys.exit(0)
-    #if env not in SUPPORTED_ENVIRONMENTS:
-    #    usage()
-    #    sys.exit(0)
-    #_args = []
-    #for arg in sys.argv[2:]:
-    #    if arg == '--verbose':
-    #        verbose = True
-    #    if arg.startswith('--project-virtualenv'):
-    #        project_virtualenv = arg.split('=')[1]
-    #    if arg.startswith('--playbook'):
-    #        playbook = arg.split('=')[1]
-    deploy(env, verbose=verbose, playbook=playbook,
+    deploy(env, version, verbose=verbose, playbook=playbook,
         project_virtualenv=project_virtualenv)
 
 
@@ -219,12 +203,14 @@ from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
 
 @click.command()
 @click.version_option()
-@click.option('-e', '--env', required=True, help='Deployment environment') 
-@optgroup.group('branch/tag to deploy', cls=RequiredMutuallyExclusiveOptionGroup, 
-                help='the branch or tag to deploy')
-@optgroup.option('-b', '--branch', help='Branch to deploy')
-@optgroup.option('-t', '--tag', help='Tag to deploy')
-@click.option('-v', '--verbose', is_flag=True, help='Verbose output')
-def cli(env, branch, tag, verbose):
-    "Ansible-based git-subcommand deployment"
-    main(env, verbose=verbose)
+@click.argument('env')
+@click.argument('project-version')
+def cli(env, project_version):
+    """Deploy to deployment environment ENV, PROJECT_VERSION of the current
+    project repository.
+
+    ENV is a configuration evironment with hosts configured in the ansible inventory.
+
+    PROJECT_VERSION is either HEAD, or a branch or tag name.
+    """
+    main(env, project_version)
