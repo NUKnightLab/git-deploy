@@ -165,12 +165,12 @@ def deploy(env, version, *ansible_args, project_virtualenv=None, playbook=None):
         builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
         if COMMON_CONFIG.get('docker_compose_file'):
             builtin_playbook(env, 'build.containers.yml', *ansible_args)
-            builtin_playbook(env, 'deploy.web.1.05.yml', *ansible_args)
+            builtin_playbook(env, 'deploy.web.yml', *ansible_args)
         else:
             print('No containers to build. Deploying legacy application ...')
             builtin_playbook(env, 'deploy.python.yml', *ansible_args)
             builtin_playbook(env, 'deploy.static.yml', *ansible_args)
-            builtin_playbook(env, 'deploy.web.1.05.yml', *ansible_args)
+            builtin_playbook(env, 'deploy.web.yml', *ansible_args)
     print('\nDone')
 
 

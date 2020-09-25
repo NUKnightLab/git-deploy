@@ -13,19 +13,16 @@
   # I'm just the messenger. Until Ansible sorts this out, we are burying
   # warnings on these shell calls b/c Ansible whines about using sudo
 
+  # Ansible's privilege escalation not working correctly for file task with
+  # link mode, hence the shell call to link the nginx config.
+
   tasks:
-    - name: copy nginx config
-      template:
-        src="{{ nginx_template | default('templates/nginx.j2') }}"
-        dest=/home/apps/nginx/{{ project_name }}
+    - name: symlink nginx config
+      shell: sudo ln -sf {{ nginx_conf }} /etc/nginx/sites-enabled/{{ project_name }}
       notify:
       - restart nginx
 
-    - name: make sure nginx server is running
-      shell: sudo service nginx start
-        warn=False
-
   handlers:
     - name: restart nginx
-      shell: sudo service nginx restart
+      shell: sudo systemctl restart nginx
         warn=False
