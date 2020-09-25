@@ -173,65 +173,60 @@ def deploy(env, verbose=False, project_virtualenv=None, playbook=None):
     else:
         sync_local_repository(env, verbose)
         deploy_repository(env, verbose)
-        if COMMON_CONFIG.get('gitdeploy_version') == '1.0.5':
-            if COMMON_CONFIG.get('docker_compose_file'):
-                build_containers(env, verbose)
-                ansible_playbook(env, 'deploy.web.1.05.yml', verbose)
-            else:
-                print('No containers to build. Deploying legacy application ...')
-                deploy_application(env, verbose)
-                deploy_static(env, verbose, project_virtualenv)
-                ansible_playbook(env, 'deploy.web.1.05.yml', verbose)
+        #if COMMON_CONFIG.get('gitdeploy_version') == '1.0.5':
+        if COMMON_CONFIG.get('docker_compose_file'):
+            build_containers(env, verbose)
+            ansible_playbook(env, 'deploy.web.1.05.yml', verbose)
         else:
+            print('No containers to build. Deploying legacy application ...')
             deploy_application(env, verbose)
             deploy_static(env, verbose, project_virtualenv)
-            deploy_web(env, verbose)
+            ansible_playbook(env, 'deploy.web.1.05.yml', verbose)
+        #else:
+        #    deploy_application(env, verbose)
+        #    deploy_static(env, verbose, project_virtualenv)
+        #    deploy_web(env, verbose)
         #deploy_extras(env, verbose)
     print('\nDone')
 
 
-def main():
-    verbose = False
+def main(env, verbose=False):
     project_virtualenv = os.environ.get('VIRTUAL_ENV')
-    playbook = None
-    try:
-        env = sys.argv[1]
-    except IndexError:
-        usage()
-        sys.exit(0)
-    if env not in SUPPORTED_ENVIRONMENTS:
-        usage()
-        sys.exit(0)
-    _args = []
-    for arg in sys.argv[2:]:
-        if arg == '--verbose':
-            verbose = True
-        if arg.startswith('--project-virtualenv'):
-            project_virtualenv = arg.split('=')[1]
-        if arg.startswith('--playbook'):
-            playbook = arg.split('=')[1]
+    playbook = None # TODO: support specific playbooks
+    #try:
+    #    env = sys.argv[1]
+    #except IndexError:
+    #    usage()
+    #    sys.exit(0)
+    #if env not in SUPPORTED_ENVIRONMENTS:
+    #    usage()
+    #    sys.exit(0)
+    #_args = []
+    #for arg in sys.argv[2:]:
+    #    if arg == '--verbose':
+    #        verbose = True
+    #    if arg.startswith('--project-virtualenv'):
+    #        project_virtualenv = arg.split('=')[1]
+    #    if arg.startswith('--playbook'):
+    #        playbook = arg.split('=')[1]
     deploy(env, verbose=verbose, playbook=playbook,
         project_virtualenv=project_virtualenv)
 
 
 import click
+from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
 
 
-@click.group()
+@click.command()
 @click.version_option()
-def cli():
+@click.option('-e', '--env', required=True, help='Deployment environment') 
+@click.option('-h', '--host', required=True, help='Host of deployment destination') 
+
+@optgroup.group('branch/tag to deploy', cls=RequiredMutuallyExclusiveOptionGroup, 
+                help='the branch or tag to deploy')
+@optgroup.option('-b', '--branch', help='Branch to deploy')
+@optgroup.option('-t', '--tag', help='Tag to deploy')
+@click.option('-v', '--verbose', is_flag=True, help='Verbose output')
+def cli(env, host, branch, tag, verbose):
     "Ansible-based git-subcommand deployment"
-
-
-@cli.command(name="command")
-@click.argument(
-    "example"
-)
-@click.option(
-    "-o",
-    "--option",
-    help="An example option",
-)
-def first_command(example, option):
-    "Command description goes here"
-    click.echo("Here is some output")
+    main(env, verbose=verbose)

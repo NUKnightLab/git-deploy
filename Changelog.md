@@ -1,6 +1,8 @@
 # TBD
 
+ * Cleaner click-based CLI. More explicit usage patterns.
  * Removes deprecated Python 2 wrapper and related documentation
+ * Removes support for pre-1.0.5 style deployments
 
 # 1.0.5 (2020-09-21)
 

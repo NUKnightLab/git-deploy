@@ -30,7 +30,7 @@ setup(
         [console_scripts]
         git-deploy=git_deploy.cli:cli
     """,
-    install_requires=['click', 'ansible'],
+    install_requires=['click', 'click-option-group', 'ansible'],
     extras_require={
         'test': ['pytest']
     },
