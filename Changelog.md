@@ -1,5 +1,6 @@
 # TBD
 
+ * Branch merge workflow no longer supported. Instead, deployers should deploy specific branches/tags to specific environments.
  * Cleaner click-based CLI. More explicit usage patterns.
  * Removes deprecated Python 2 wrapper and related documentation
  * Removes support for pre-1.0.5 style deployments
