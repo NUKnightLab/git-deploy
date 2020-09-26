@@ -10,6 +10,7 @@ import sys
 from subprocess import check_output as _check_output
 from subprocess import call as _call
 import yaml
+from rich import print
 from . import __version__
 from dotenv import load_dotenv
 
@@ -48,7 +49,7 @@ def get_config_dir():
 def call(command, **kwargs):
     if kwargs:
         command = command % kwargs
-    print(command)
+    print(f'[bold yellow underline]Executing[/bold yellow underline][yellow]: {command}')
     return _call(command.split())
 
 
@@ -94,10 +95,10 @@ def builtin_playbook(env, playbook_name, *ansible_args):
 def deploy(env, version, *ansible_args):
     gitdeploy_version = COMMON_CONFIG.get('gitdeploy_version')
     if gitdeploy_version and gitdeploy_version != __version__:
-        print(FAIL + \
+        print('[bold red]' \
             '\nThis project is designed for git-deploy version %s. Please ' \
             'checkout the %s version branch of git-deploy before executing.' % (
-            gitdeploy_version, gitdeploy_version) + ENDC)
+            gitdeploy_version, gitdeploy_version))
         sys.exit()
     if COMMON_CONFIG['type'] == 'repository':
         builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
@@ -111,11 +112,10 @@ def deploy(env, version, *ansible_args):
         builtin_playbook(env, 'build.containers.yml', *ansible_args)
         builtin_playbook(env, 'deploy.web.yml', *ansible_args)
     else:
-        print('No containers to build. Deploying legacy application ...')
         builtin_playbook(env, 'deploy.python.yml', *ansible_args)
         builtin_playbook(env, 'deploy.static.yml', *ansible_args)
         builtin_playbook(env, 'deploy.web.yml', *ansible_args)
-    print('\nDone')
+    print('\n[green]Done')
 
 
 import click
@@ -178,7 +178,7 @@ def default(ctx, env, project_version, playbook):
     """
     ansible_args = ctx.args 
     ansible_args.extend(['-e', f'project_version={project_version}'])
-    print('Passing arguments to ansible commands: %s\n' % ' '.join(ansible_args))
+    print('[blue]Passing arguments to ansible commands:[/blue] %s\n' % ' '.join(ansible_args))
     if playbook is not None:
         ansible_playbook(env, playbook, *ansible_args)
     else:
