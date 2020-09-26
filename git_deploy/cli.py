@@ -15,11 +15,6 @@ from . import __version__
 from dotenv import load_dotenv
 
 
-WARNING = '\033[93m'
-FAIL = '\033[91m'
-ENDC = '\033[0m'
-
-
 def _sh(*args):
     return _check_output(args).decode('utf-8').strip()
 
