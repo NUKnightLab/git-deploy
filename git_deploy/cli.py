@@ -7,12 +7,15 @@ restarting appropriate services, and syncing static media to S3.
 """
 import os
 import sys
+import yaml
 from subprocess import check_output as _check_output
 from subprocess import call as _call
-import yaml
-from rich import print
 from . import __version__
+from rich import print
 from dotenv import load_dotenv
+
+
+PLAYBOOKS_DIR = 'playbooks'
 
 
 def _sh(*args):
@@ -78,7 +81,8 @@ def ansible_vault(env, command):
 
 
 def playbook_path(name):
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'ansible')
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+        PLAYBOOKS_DIR)
     return os.path.join(path, name)
 
 
