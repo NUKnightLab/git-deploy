@@ -5,21 +5,19 @@ git subcommand to remotely deploy projects.
 Uses Ansible for the heavy lifting of deploying branches to remote servers,
 restarting appropriate services, and syncing static media to S3.
 """
-import glob
 import os
 import sys
 from subprocess import check_output as _check_output
 from subprocess import call as _call
 import yaml
 from . import __version__
+from dotenv import load_dotenv
+
+
 
 WARNING = '\033[93m'
 FAIL = '\033[91m'
 ENDC = '\033[0m'
-
-
-ASSETS_DIR = os.environ.get('GIT_DEPLOY_ASSETS_DIR',
-    os.path.expanduser('~/.git-deploy-assets'))
 
 
 def _sh(*args):
@@ -32,13 +30,15 @@ def sh(command, **kwargs):
     return _sh(*command.split())
 
 
-def get_vault_dir():
-    return os.environ.get('GIT_DEPLOY_VAULT_DIR',
-        os.path.join(ASSETS_DIR, 'vault'))
-
-
 def get_project_path():
     return sh('git rev-parse --show-toplevel')
+
+
+load_dotenv(dotenv_path=os.path.join(get_project_path(), '.env'))
+
+
+def get_vault_dir():
+    return os.environ.get('GIT_DEPLOY_VAULT_DIR')
 
 
 def get_config_dir():
@@ -65,13 +65,13 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
     command = 'ansible-playbook'
     for a in ansible_args:
         command += f' {a}'
-    command += ' -e env=%s' % env
+    command += f' -e env={env}'
     #command += ' -e project_root=%s' % get_project_path()
     command += ' -e config_dir=%s' % get_config_dir()
     command += ' -e vault_dir=%s' % get_vault_dir()
     for k,v in kwargs.items():
-        command += ' -e %s=%s' % (k,v)
-    command += ' %s' % playbook
+        command += f' -e {k}={v}'
+    command += f' {playbook}'
     call(command)
 
 
@@ -92,7 +92,7 @@ def deploy(env, version, *ansible_args):
             '\nThis project is designed for git-deploy version %s. Please ' \
             'checkout the %s version branch of git-deploy before executing.' % (
             gitdeploy_version, gitdeploy_version) + ENDC)
-        sys.exit(0)
+        sys.exit()
     if COMMON_CONFIG['type'] == 'repository':
         builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
         return

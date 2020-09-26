@@ -57,8 +57,18 @@ This means:
    - inventory can also be specified in the Ansible config file 
  * Specify project-specific configurations in an ansible config file indicated by the ANSIBLE_CONFIG environment variable (https://docs.ansible.com/ansible/latest/reference_appendices/config.html)
  * The following environment variables are no longer supported:
+    - GIT_DEPLOY_ASSETS_DIR
     - GIT_DEPLOY_INVENTORY
     - GIT_DEPLOY_VAULT_PASSWORD_FILE
+
+These variables are still supported:
+
+ * **GIT_DEPLOY_VAULT_DIR** Since there is no longer a GIT_DEPLOY_ASSETS_DIR,
+   there is also not a default vault dir at that location. GIT_DEPLOY_VAULT_DIR
+   must be specified if vaulted secrets are used.
+
+git-deploy will attempt to load environment variables from a .env file in the root
+of the repository if it exists.
 
 
 ### Legacy setup for git-deploy <= 1.0.5
