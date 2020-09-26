@@ -1,5 +1,8 @@
 # TBD
 
+ * GIT_DEPLOY_INVENTORY no longer supported (use Ansible inventory configs)
+ * GIT_DEPLOY_VAULT_PASSWORD_FILE no longer supported (use Ansible vault_password_file config, ANSIBLE_VAULT_PASSWORD_FILE env var, or --vault-password-file on cli)
+ * supported_envs config no longer used.
  * Branch merge workflow no longer supported. Instead, deployers should deploy specific branches/tags to specific environments.
  * Cleaner click-based CLI. More explicit usage patterns.
  * Removes deprecated Python 2 wrapper and related documentation

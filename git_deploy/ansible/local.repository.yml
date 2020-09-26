@@ -19,19 +19,19 @@
         warn: False
       register: original_branch
 
-    - name: "checkout development branch: {{ merge_from }}"
-      shell: git checkout {{ merge_from }}
-      args:
-        chdir: "{{ project_root }}"
-        warn: False
+    #- name: "checkout development branch: {{ merge_from }}"
+    #  shell: git checkout {{ merge_from }}
+    #  args:
+    #    chdir: "{{ project_root }}"
+    #    warn: False
 
     # Don't use the git module here - it will overwrite local commits.
     # See: https://github.com/ansible/ansible-modules-core/issues/614
-    - name: "sync local development branch: {{ merge_from }}"
-      shell: git pull; git push
-      args:
-        chdir: "{{ project_root }}"
-        warn: False
+    #- name: "sync local development branch: {{ merge_from }}"
+    #  shell: git pull; git push
+    #  args:
+    #    chdir: "{{ project_root }}"
+    #    warn: False
 
     - name: "checkout deployment branch: {{ env }}"
       shell: git checkout {{ env }}
@@ -39,11 +39,11 @@
         chdir: "{{ project_root }}"
         warn: False
 
-    - name: "merge and sync deployment branch: {{ env }}"
-      shell: git pull; git merge {{ merge_from }}; git push
-      args:
-        chdir: "{{ project_root }}"
-        warn: False
+    #- name: "merge and sync deployment branch: {{ env }}"
+    #  shell: git pull; git merge {{ merge_from }}; git push
+    #  args:
+    #    chdir: "{{ project_root }}"
+    #    warn: False
 
     - name: "checkout original branch: {{ original_branch.stdout }}"
       shell: git checkout {{ original_branch.stdout }}

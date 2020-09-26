@@ -12,17 +12,15 @@ should not be a necessary requirement.
 
 ## Usage:
 
-`git-deploy <env>` within the project repository will deploy to
-branch / environment (Note: the git branch and deployment environment should
-have the same name)
+`git-deploy <env> <version>` within the project repository will deploy the
+specified branch/tag (version) to the specified environment.
 
 
 ### Additional options:
 
-  `--verbose` show a lot of extra information
-
   `--playbook=<playbook>` run a specific playbook. Currently supported playbooks
    are: deploy.python.yml, deploy.static.yml, 'deploy.repository.yml, deploy.web.yml
+
 
 ## Getting started checklist
 
@@ -39,12 +37,28 @@ To install a specific version, e.g.:
 ```
 
 git-deploy now uses standard ansible configurations for configuration management.
+
+Ansible configs are determined by:
+
+ * ANSIBLE_CONFIG environment variable
+ * /etc/ansible/ansible.cfg
+ * ~/.ansible.cfg
+
+See the [Ansible docs](https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html)
+for details.
+
+
 This means:
 
+ * Most alternative configurations are now handled via the Ansible config rather than
+   with GIT_DEPLOY env variables.
  * Unless otherwise specified, the inventory file is /etc/ansible/hosts
+   - alternative inventory file can be specified by -i (https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html)
+   - inventory can also be specified in the Ansible config file 
  * Specify project-specific configurations in an ansible config file indicated by the ANSIBLE_CONFIG environment variable (https://docs.ansible.com/ansible/latest/reference_appendices/config.html)
  * The following environment variables are no longer supported:
     - GIT_DEPLOY_INVENTORY
+    - GIT_DEPLOY_VAULT_PASSWORD_FILE
 
 
 ### Legacy setup for git-deploy <= 1.0.5
@@ -93,8 +107,14 @@ We are currently only supporting Python 3 variants, with Ansible >= 2.9.9.
 
 ## hosts (a.k.a inventory) file format
 
+git-deploy now depends on standard Ansible configs for finding the inventory.
 
-git-deploy will look in `~/.git-deploy-assets/hosts` for the host inventory.
+This means your inventory can be specified by:
+
+ * /etc/ansible/hosts
+ * An inventory file specified by `inventory=filepath` in an ansible config
+ * On the command-line via the -i flag
+
 
 git-deploy currently supports a single `app` role with multiple evironments.
 Support for further role-based deployment support is in the future roadmap.
@@ -102,10 +122,10 @@ Support for further role-based deployment support is in the future roadmap.
 A typical hosts file setup for `stg` and `prd` environments looks like:
 
 ```
-[stg-app]
+[stg]
 staging-appserver.mydomain.com ansible_user={{ application_user }}
 
-[prd-app]
+[prd]
 production-appserver.mydomain.com ansible_user={{ application_user }}
 ```
 
