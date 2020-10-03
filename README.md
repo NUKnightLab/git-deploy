@@ -1,11 +1,12 @@
 # git-deploy
 
-An Ansible-based git-subcommand deployment script with support for projects in
-Python 3 (potentially for non-python projects also, but not yet supported as
-such). See the **Project organization** section at the end of this README if
-you are not sure if git-deploy is right your project's deployment needs.
+A suite of git subcommands for managing repository-based deployments with
+Ansible. Currently includes:
 
-`git-deploy` is mostly just some opinionated scaffolding around Ansible. 
+ * git-deploy: deploy a project repository to an environment-specific config (e.g. stg, prd)
+ * git-secrets: manage vault secrets for a git-deploy configured project
+
+`git-deploy` tools are mostly just some opinionated scaffolding around Ansible. 
 Ansible knowledge is helpful for debugging and working through issues, but
 should not be a necessary requirement.
 
@@ -15,12 +16,34 @@ should not be a necessary requirement.
 `git-deploy <env> <version>` within the project repository will deploy the
 specified branch/tag (version) to the specified environment.
 
+### Help from the CLI
 
-### Additional options:
+Note the dash here as the --help flag will not work otherwise.
 
-  `--playbook=<playbook>` run a specific playbook. Currently supported playbooks
-   are: deploy.python.yml, deploy.static.yml, 'deploy.repository.yml, deploy.web.yml
+```
+ $ git-deploy --help
+ $ git-secrets --help
+```
 
+or just (no dash, but no --help flag):
+
+```
+ $ git deploy
+ $ git secrets
+```
+
+**Note:** Due to details of how git handles subcommands and the --help flag, it
+is not possible to invoke help via the git subcommand `deploy --help`.
+
+
+### Some useful options
+
+  * `--playbook=<playbook>` run a specific playbook.
+  * `--check` dry-run, shows what commands Ansible would execute
+
+In general, any [options that will work with ansible-playbook](https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html) should also work with git-deploy.
+
+---
 
 ## Getting started checklist
 

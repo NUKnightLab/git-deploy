@@ -11,6 +11,7 @@ from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
 from .ansible import deploy, ansible_vault, ansible_playbook
 
 
+
 class DefaultCommandGroup(click.Group):
     """Group with default command. From: https://stackoverflow.com/a/52069546
     """
@@ -50,13 +51,26 @@ def cli(ctx):
     pass
 
 
+@click.group(cls=DefaultCommandGroup)
+@click.version_option()
+@click.pass_context
+def secrets(ctx):
+    """Invoke an ansible-vault command on the env-specific vault file for this
+    project.
+
+    COMMAND: ansible-vault command (create|decrypt|edit|view|encrypt|rekey)
+
+    ENV: A configuration evironment with hosts configured in the ansible inventory.
+    """
+    ansible_vault(env, command)
+
 @cli.command(default_command=True, context_settings=context_settings)
 @click.pass_context
-@click.argument('env')
-@click.argument('project-version')
 @click.option('-p', '--playbook', required=False,
     help='Specify a playbook to run rather than a project deployment.')
-def default(ctx, env, project_version, playbook):
+@click.argument('env')
+@click.argument('project-version')
+def default(ctx, playbook, env, project_version):
     """Deploy to environment ENV, PROJECT_VERSION of the current project repository.
 
     ENV: A configuration evironment with hosts configured in the ansible inventory.
@@ -74,7 +88,7 @@ def default(ctx, env, project_version, playbook):
         deploy(env, project_version, *ansible_args)
 
 
-@cli.command()
+@cli.command(context_settings=context_settings)
 @click.pass_context
 @click.argument('command')
 @click.argument('env')
@@ -87,3 +101,41 @@ def vault(ctx, command, env):
     ENV: A configuration evironment with hosts configured in the ansible inventory.
     """
     ansible_vault(env, command)
+
+
+from typing import Optional
+import typer
+
+deploy_app = typer.Typer()
+secrets_app = typer.Typer()
+
+@secrets_app.command()
+def secrets(command: str): 
+    """Invoke an ansible-vault command on the env-specific vault file for this
+    project.
+
+    COMMAND: ansible-vault command (create|decrypt|edit|view|encrypt|rekey)
+
+    ENV: A configuration evironment with hosts configured in the ansible inventory.
+    """
+    ansible_vault(env, command)
+
+
+@deploy_app.command()
+def deploy(ctx: typer.Context, env: str, project_version: str, playbook: str=typer.Option(None)):
+    """Deploy to environment ENV, PROJECT_VERSION of the current project repository.
+
+    ENV: A configuration evironment with hosts configured in the ansible inventory.
+
+    PROJECT_VERSION: Either HEAD, or a branch or tag name.
+
+    ** Note: Additional arguments are passed (without validation) to Ansible.
+    """
+    ansible_args = ctx.args 
+    ansible_args.extend(['-e', f'project_version={project_version}'])
+    print('[blue]Passing arguments to ansible commands:[/blue] %s\n' % ' '.join(ansible_args))
+    if playbook is not None:
+        ansible_playbook(env, playbook, *ansible_args)
+    else:
+        deploy(env, project_version, *ansible_args)
+ 
