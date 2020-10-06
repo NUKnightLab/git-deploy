@@ -77,10 +77,16 @@ setup(
     license='MIT',
     version=VERSION,
     packages=['git_deploy'],
+    #entry_points="""
+    #    [console_scripts]
+    #    git-deploy=git_deploy.cli:deploy_app
+    #    git-secrets=git_deploy.cli:secrets_app
+    #""",
     entry_points="""
         [console_scripts]
-        git-deploy=git_deploy.cli:deploy
-        git-secrets=git_deploy.cli:secrets
+        git-deploy=git_deploy.typercli:deploy
+        git-secrets=git_deploy.typercli:run_secrets
+        git-playbook=git_deploy.typercli:run_playbook
     """,
     install_requires=['click', 'click-option-group', 'python-dotenv', 'rich', 'ansible'],
     extras_require={

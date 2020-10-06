@@ -8,7 +8,8 @@ restarting appropriate services, and syncing static media to S3.
 from rich import print
 import click
 from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
-from .ansible import deploy, ansible_vault, ansible_playbook
+from .ansible import ansible_vault, ansible_playbook
+from .ansible import deploy as ansible_deploy
 
 
 
@@ -70,7 +71,7 @@ def secrets(ctx):
     help='Specify a playbook to run rather than a project deployment.')
 @click.argument('env')
 @click.argument('project-version')
-def default(ctx, playbook, env, project_version):
+def _default(ctx, playbook, env, project_version):
     """Deploy to environment ENV, PROJECT_VERSION of the current project repository.
 
     ENV: A configuration evironment with hosts configured in the ansible inventory.
@@ -85,7 +86,7 @@ def default(ctx, playbook, env, project_version):
     if playbook is not None:
         ansible_playbook(env, playbook, *ansible_args)
     else:
-        deploy(env, project_version, *ansible_args)
+        ansible_deploy(env, project_version, *ansible_args)
 
 
 @cli.command(context_settings=context_settings)
@@ -107,10 +108,11 @@ from typing import Optional
 import typer
 
 deploy_app = typer.Typer()
-secrets_app = typer.Typer()
+#secrets_app = typer.Typer()
 
-@secrets_app.command()
-def secrets(command: str): 
+#@secrets_app.command()
+#@deploy_app.command()
+def secrets_callback(command: str): 
     """Invoke an ansible-vault command on the env-specific vault file for this
     project.
 
@@ -122,7 +124,7 @@ def secrets(command: str):
 
 
 @deploy_app.command()
-def deploy(ctx: typer.Context, env: str, project_version: str, playbook: str=typer.Option(None)):
+def _deploy(ctx: typer.Context, env: str, project_version: str, playbook: str=typer.Option(None)):
     """Deploy to environment ENV, PROJECT_VERSION of the current project repository.
 
     ENV: A configuration evironment with hosts configured in the ansible inventory.
@@ -131,11 +133,34 @@ def deploy(ctx: typer.Context, env: str, project_version: str, playbook: str=typ
 
     ** Note: Additional arguments are passed (without validation) to Ansible.
     """
-    ansible_args = ctx.args 
+    #ansible_args = ctx.args 
+    #if ctx.invoked_subcommand is None:
     ansible_args.extend(['-e', f'project_version={project_version}'])
     print('[blue]Passing arguments to ansible commands:[/blue] %s\n' % ' '.join(ansible_args))
     if playbook is not None:
         ansible_playbook(env, playbook, *ansible_args)
     else:
-        deploy(env, project_version, *ansible_args)
- 
+        ansible_deploy(env, project_version, *ansible_args)
+     
+
+@deploy_app.callback(invoke_without_command=True)
+def deploy(ctx: typer.Context):
+    ansible_args = ctx.args 
+    if ctx.invoked_subcommand is None:
+        _deploy(ctx, *args)
+
+
+def main(
+    ctx: typer.Context,
+    env: str,
+    project_version: str,
+    playbook: str=typer.Option(None),
+    secrets: Optional[bool] = typer.Option(
+        None, 'secrets', callback=secrets_callback, is_eager=True
+    ),
+):
+    typer.echo('hello')
+
+
+def run():
+    typer.run(main)
