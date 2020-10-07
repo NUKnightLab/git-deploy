@@ -88,7 +88,15 @@ setup(
         git-secrets=git_deploy.typercli:run_secrets
         git-playbook=git_deploy.typercli:run_playbook
     """,
-    install_requires=['click', 'click-option-group', 'python-dotenv', 'rich', 'ansible'],
+    install_requires=[
+        'GitPython',
+        'ansible',
+        'click',
+        'click-option-group',
+        'python-dotenv',
+        'rich',
+        'typer',
+    ],
     extras_require={
         'test': ['pytest']
     },

@@ -7,6 +7,8 @@ from .ansible import deploy as ansible_deploy
 from .ansible import PLAYBOOKS_DIR, get_config_dir
 import typer
 
+from git import Repo
+
 __version__ = "0.1.0"
 
 
@@ -30,6 +32,12 @@ Environments = Enum('Environments', {
     f.name.split('.')[1]:f.name.split('.')[1]
     for f in Path(get_config_dir()).glob('config.*.yml')
     if f.name != 'config.common.yml' })
+
+repo = Repo(os.getcwd())
+
+
+Versions = Enum('Versions',
+    { x.name:x.name for x in repo.branches + repo.tags })
 
 
 def version_callback(value: bool):
@@ -83,7 +91,7 @@ def playbook_callback(*args):
 def _deploy(
     ctx: typer.Context,
     env: Environments,
-    project_version: str, # passed to ansible -e as `project_version`
+    project_version: Versions,
     version: Optional[bool] = typer.Option(
         None, "--version", callback=version_callback, is_eager=True
     ),
@@ -92,7 +100,7 @@ def _deploy(
     ),
 ):
     env = env.value
-    print('deploy', env, project_version)
+    print('deploy', env, project_version.value)
     ansible_args = ctx.args 
     ansible_args.extend(['-e', f'project_version={project_version}'])
     print('[blue]Passing arguments to ansible commands:[/blue] %s\n' % ' '.join(ansible_args))
