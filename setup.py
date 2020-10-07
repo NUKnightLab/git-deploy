@@ -84,9 +84,9 @@ setup(
     #""",
     entry_points="""
         [console_scripts]
-        git-deploy=git_deploy.typercli:deploy
-        git-secrets=git_deploy.typercli:run_secrets
-        git-playbook=git_deploy.typercli:run_playbook
+        git-deploy=git_deploy.deploy:run_deploy
+        git-secrets=git_deploy.secrets:run_secrets
+        git-playbook=git_deploy.playbook:run_playbook
     """,
     install_requires=[
         'GitPython',

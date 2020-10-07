@@ -3,13 +3,12 @@ import sys
 import yaml
 from rich import print
 from dotenv import load_dotenv
-from .sh import call, get_project_path
+from .sh import call
+from .repo import get_project_path
 from . import __version__
 
 PLAYBOOKS_DIR = 'playbooks'
 
-
-load_dotenv(dotenv_path=os.path.join(get_project_path(), '.env'))
 
 
 def get_vault_dir():
@@ -26,7 +25,15 @@ def get_common_config():
     with open(fn) as f:
         cfg = yaml.safe_load(f)
     return cfg
-COMMON_CONFIG = get_common_config()
+
+
+_common_config = None
+def common_config():
+    global _common_config
+    if _common_config is None:
+        _common_config = get_common_config()
+    return _common_config
+    
 
 
 def ansible_playbook(env, playbook, *ansible_args, **kwargs):
@@ -44,7 +51,7 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
 
 
 def ansible_vault(env, command):
-    project_name = COMMON_CONFIG['project_name']
+    project_name = common_config()['project_name']
     vault_file = os.path.join(get_vault_dir(), project_name, f'vault.{env}.yml')
     command = f'ansible-vault {command} {vault_file}'
     call(command)
@@ -62,22 +69,22 @@ def builtin_playbook(env, playbook_name, *ansible_args):
 
 
 def deploy(env, version, *ansible_args):
-    gitdeploy_version = COMMON_CONFIG.get('gitdeploy_version')
+    gitdeploy_version = common_config().get('gitdeploy_version')
     if gitdeploy_version and gitdeploy_version != __version__:
         print('[bold red]' \
             '\nThis project is designed for git-deploy version %s. Please ' \
             'checkout the %s version branch of git-deploy before executing.' % (
             gitdeploy_version, gitdeploy_version))
         sys.exit()
-    if COMMON_CONFIG['type'] == 'repository':
+    if common_config()['type'] == 'repository':
         builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
         return
-    elif COMMON_CONFIG['type'] == 'static':
+    elif common_config()['type'] == 'static':
         builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
         builtin_playbook(env, 'deploy.static.yml', *ansible_args)
         return
     builtin_playbook(env, 'deploy.repository.yml', *ansible_args)
-    if COMMON_CONFIG.get('docker_compose_file'):
+    if common_config().get('docker_compose_file'):
         builtin_playbook(env, 'build.containers.yml', *ansible_args)
         builtin_playbook(env, 'deploy.web.yml', *ansible_args)
     else:

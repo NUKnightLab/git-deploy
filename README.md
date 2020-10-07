@@ -1,17 +1,32 @@
 # git-deploy
 
-A suite of git subcommands for managing repository-based deployments with
-Ansible. Currently includes:
+A suite of git subcommands for managing deployment-related operations for
+git repository-based deployments. Currently includes:
 
  * git-deploy: deploy a project repository to an environment-specific config (e.g. stg, prd)
- * git-secrets: manage vault secrets for a git-deploy configured project
+ * git-secrets: manage ansible-vault secrets for a git-deploy configured project
+ * git-playbook: run one of the git-deploy builtin playbooks (custom playbooks tbd)
 
-`git-deploy` tools are mostly just some opinionated scaffolding around Ansible. 
+`git-deploy` tools are mostly just opinionated scaffolding around Ansible. 
 Ansible knowledge is helpful for debugging and working through issues, but
 should not be a necessary requirement.
 
+## Installation
 
-## Usage:
+```
+ $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git
+```
+
+
+## Usage
+
+Type an empty subcommand to get help from the cli:
+
+```
+ $ git deploy
+ $ git secrets
+ $ git playbook
+```
 
 `git-deploy <env> <version>` within the project repository will deploy the
 specified branch/tag (version) to the specified environment.

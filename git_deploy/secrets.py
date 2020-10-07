@@ -1,0 +1,35 @@
+from .repo import verify_repo, get_project_path
+verify_repo('git-secrets')
+
+import os
+from dotenv import load_dotenv
+load_dotenv(dotenv_path=os.path.join(get_project_path(), '.env'))
+
+from typing import Optional
+import typer
+from . import version_callback
+from .ansible import ansible_vault
+from .enums import Environments, SecretsCommands
+
+
+#def version_callback(value: bool):
+#    if value:
+#        typer.echo(__version__)
+#        raise typer.Exit()
+
+secrets_app = typer.Typer()
+
+
+@secrets_app.command()
+def secrets(
+    env: Environments,
+    command: SecretsCommands,
+    version: Optional[bool] = typer.Option(
+        None, "--version", callback=version_callback, is_eager=True
+    ),
+):
+    ansible_vault(env.value, command.value)
+
+
+def run_secrets():
+    secrets_app()
