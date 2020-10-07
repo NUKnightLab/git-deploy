@@ -100,7 +100,8 @@ def _deploy(
     ),
 ):
     env = env.value
-    print('deploy', env, project_version.value)
+    project_version = project_version.value
+    print('deploy', env, project_version)
     ansible_args = ctx.args 
     ansible_args.extend(['-e', f'project_version={project_version}'])
     print('[blue]Passing arguments to ansible commands:[/blue] %s\n' % ' '.join(ansible_args))
