@@ -12,11 +12,6 @@ from .ansible import ansible_vault
 from .enums import Environments, SecretsCommands
 
 
-#def version_callback(value: bool):
-#    if value:
-#        typer.echo(__version__)
-#        raise typer.Exit()
-
 secrets_app = typer.Typer()
 
 

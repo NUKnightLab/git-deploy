@@ -55,7 +55,6 @@ class DevelopCommand(CommandMixin, develop):
     user_options = getattr(develop, 'user_options', []) + CommandMixin.user_options
 
 
-
 setup(
     # This is an attempt to make the command names customizable but the approach
     # is not working. Despite being marked as global variables above, they
@@ -77,11 +76,6 @@ setup(
     license='MIT',
     version=VERSION,
     packages=['git_deploy'],
-    #entry_points="""
-    #    [console_scripts]
-    #    git-deploy=git_deploy.cli:deploy_app
-    #    git-secrets=git_deploy.cli:secrets_app
-    #""",
     entry_points="""
         [console_scripts]
         git-deploy=git_deploy.deploy:run_deploy

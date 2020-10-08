@@ -17,8 +17,6 @@ from .ansible import deploy as ansible_deploy
 from .enums import Environments, Versions
 from .repo import get_project_path
 
-#load_dotenv(dotenv_path=os.path.join(get_project_path(), '.env'))
-
 
 context_settings = {
     'ignore_unknown_options': True,
@@ -27,6 +25,16 @@ context_settings = {
 
 
 deploy_app = typer.Typer()
+
+from typer.testing import CliRunner
+runner = CliRunner()
+
+
+
+@deploy_app.callback()
+def deploy_callback():
+    pass
+    #runner.invoke(deploy_app, ["--help"])
 
 
 @deploy_app.command(context_settings=context_settings)
@@ -38,16 +46,19 @@ def deploy(
         None, "--version", callback=version_callback, is_eager=True
     ),
 ):
+    """
+    For a configured deployment environment, deploy the specified project
+    version to that environment.
+    """
     env = env.value
     project_version = project_version.value
     ansible_args = ctx.args 
     ansible_args.extend(['-e', f'project_version={project_version}'])
-    msg = typer.style("Passing arguments to ansible commands:",
-        fg=typer.colors.BLUE)
-    msg += typer.style(' '.join(ansible_args))
-    typer.echo(msg)
-    
-    print('[blue]Passing arguments to ansible commands:[/blue] %s\n' % ' '.join(ansible_args))
+    # Typer would have us use the builtin color styles and echo, but rich does
+    # a better job of formatting command output.
+    print(
+        '[blue]Passing arguments to ansible commands:[/blue] %s\n' %
+        ' '.join(ansible_args))
     ansible_deploy(env, None, *ansible_args)
 
 
