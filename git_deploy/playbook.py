@@ -30,6 +30,12 @@ def playbook(
         None, "--version", callback=version_callback, is_eager=True
     ),
 ):
+    """
+    Execute an env-specific git-deploy internal playbook.
+
+    For the given env configuration, execute the specified Ansible playbook
+    from the available playbooks in git-deploy.
+    """
     from .ansible import builtin_playbook
     ansible_args = ctx.args 
     builtin_playbook(env.value, playbook.value, *ansible_args)

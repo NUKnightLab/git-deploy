@@ -1,4 +1,4 @@
-- hosts: "{{ env }}_app"
+- hosts: "{{ env }}"
   # Currently requires a vault file even if empty
   vars_files:
     - "{{ config_dir }}/config.common.yml"

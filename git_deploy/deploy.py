@@ -26,15 +26,6 @@ context_settings = {
 
 deploy_app = typer.Typer()
 
-from typer.testing import CliRunner
-runner = CliRunner()
-
-
-
-@deploy_app.callback()
-def deploy_callback():
-    pass
-    #runner.invoke(deploy_app, ["--help"])
 
 
 @deploy_app.command(context_settings=context_settings)
@@ -47,8 +38,10 @@ def deploy(
     ),
 ):
     """
-    For a configured deployment environment, deploy the specified project
-    version to that environment.
+    Deploy a project version to an environment.
+
+    For the given configured deployment environment, deploy the specified
+    project version to that environment.
     """
     env = env.value
     project_version = project_version.value

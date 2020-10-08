@@ -7,6 +7,8 @@
  * Cleaner click-based CLI. More explicit usage patterns.
  * Removes deprecated Python 2 wrapper and related documentation
  * Removes support for pre-1.0.5 style deployments
+ * Introduces git-secrets and git-playbook commands
+ * Aligns deployment environments with env config names, thus eliminating coersion from `stg` to, e.g. `stg_app`, `stg_work`. 
 
 # 1.0.5 (2020-09-21)
 

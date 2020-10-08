@@ -1,73 +1,42 @@
 # git-deploy
 
-A suite of git subcommands for managing deployment-related operations for
-git repository-based deployments. Currently includes:
+An Ansible-based git-subcommand deployment script with support for projects in
+Python 3 (potentially for non-python projects also, but not yet supported as
+such). See the **Project organization** section at the end of this README if
+you are not sure if git-deploy is right your project's deployment needs.
 
- * git-deploy: deploy a project repository to an environment-specific config (e.g. stg, prd)
- * git-secrets: manage ansible-vault secrets for a git-deploy configured project
- * git-playbook: run one of the git-deploy builtin playbooks (custom playbooks tbd)
-
-`git-deploy` tools are mostly just opinionated scaffolding around Ansible. 
+`git-deploy` is mostly just some opinionated scaffolding around Ansible. 
 Ansible knowledge is helpful for debugging and working through issues, but
 should not be a necessary requirement.
 
-## Installation
 
-To install the latest version of the full suite of git-deploy tools:
+## Usage:
+
+`git-deploy <env> <version>` within the project repository will deploy the
+specified branch/tag (version) to the specified environment.
+
+
+### Additional options:
+
+  `--playbook=<playbook>` run a specific playbook. Currently supported playbooks
+   are: deploy.python.yml, deploy.static.yml, 'deploy.repository.yml, deploy.web.yml
+
+
+## Getting started checklist
+
+### New pip install for git-deploy >= 1.0.6
 
 ```
  $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git
 ```
 
-A version may be specified, e.g.:
+To install a specific version, e.g.:
 
 ```
  $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git@1.0.6
 ```
 
-
-## Usage
-
-Type an empty subcommand to get help from the cli:
-
-```
- $ git deploy
- $ git secrets
- $ git playbook
-```
-
-For more detailed help, the full hyphenated command name must be specifed for
-the --help flag, due to the way git processes this flag:
-
-```
- $ git-deploy --help
- $ git-secrets --help
- $ git-playbook --help
-```
-
-
-### Some useful options
-
-**git-deploy specifically**
-
-Any additional options passed after the full git-deploy command will be passed
-to Ansible. In general, any [options that will work with ansible-playbook](https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html) should also work with git-deploy.
-
-E.g.:
-
-  `--check` is a dry-run flag that shows what commands Ansible would execute:
-
-```
-  $ git deploy stg 1.0.1 --check
-```
-
-
----
-
-### Configuration
-
-
-Standard ansible configurations are used for configuration management.
+git-deploy now uses standard ansible configurations for configuration management.
 
 Ansible configs are determined by:
 
@@ -87,144 +56,88 @@ This means:
    - alternative inventory file can be specified by -i (https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html)
    - inventory can also be specified in the Ansible config file 
  * Specify project-specific configurations in an ansible config file indicated by the ANSIBLE_CONFIG environment variable (https://docs.ansible.com/ansible/latest/reference_appendices/config.html)
- * The following environment variables are **no longer supported**:
+ * The following environment variables are no longer supported:
     - GIT_DEPLOY_ASSETS_DIR
     - GIT_DEPLOY_INVENTORY
     - GIT_DEPLOY_VAULT_PASSWORD_FILE
 
+These variables are still supported:
+
+ * **GIT_DEPLOY_VAULT_DIR** Since there is no longer a GIT_DEPLOY_ASSETS_DIR,
+   there is also not a default vault dir at that location. GIT_DEPLOY_VAULT_DIR
+   must be specified if vaulted secrets are used.
 
 git-deploy will attempt to load environment variables from a .env file in the root
 of the repository if it exists.
 
 
-### The git-deploy vault directory
-
-The following environment variables is supported across the git-deploy suite:
-
- * **GIT_DEPLOY_VAULT_DIR**
-
-Since there is no longer a GIT_DEPLOY_ASSETS_DIR, there is also not a default
-vault dir at that location. **GIT_DEPLOY_VAULT_DIR must be specified if vaulted
-secrets are used**.
-
-
-
 ### Legacy setup for git-deploy <= 1.0.5
 
+For working with a project that is already configured for git-deploy:
 
-See the legacy README doc if you need to install a version of git-deploy older
-than 1.0.6
+ 1. Follow the **First Steps** section below to install Ansible and git-deploy
 
+ 2. Place a hosts file in `~/.git-deploy-assets` or in the file indicated by
+    the `GIT_DEPLOY_INVENTORY` environment varable. See the **hosts**
+    section below for file details.
+
+ 3. If your project has Ansible vaulted secrets, place them in a
+    project-specific directory under `~/.git-deploy-assets/vault/projectname/vault.<env>.yml`.
+    Also set your vault password in the file `~/.git-deploy-assets/vault_password` (See the
+    Advanced Usage section below for alternative file locations).
+
+For getting a new project configured for git-deploy, do all of the above, and
+continue to follow the **Additional First-time setup for each project** section.
 
 
 ## First Steps
 
+### Install Ansible
+
+You may choose to install Ansible globally, ie. in the user context:
+
+```
+ $ pip install --user ansible
+```
+
+Or, you can install on a per-project basis into your project's virtualenv
+provided your project Python is compatible with your version of Ansible.
+We are currently only supporting Python 3 variants, with Ansible >= 2.9.9.
+
+### Clone git-deploy and make it path executable
+
+ * Clone this repository
+ * Put the git-deploy.py executable on your `PATH` as `git-deploy`.
+
+   e.g.: `ln -s ~/repos/git-deploy/git-deploy.py /usr/local/bin/git-deploy`
+
+ * Place your hosts file in `~/.git-deploy-assets` or set `GIT_DEPLOY_INVENTORY` to
+   point to your hosts file. See below for host file format
+
 
 ## hosts (a.k.a inventory) file format
 
-git-deploy depends on standard Ansible configs for finding the inventory.
+git-deploy now depends on standard Ansible configs for finding the inventory.
 
 This means your inventory can be specified by:
 
  * /etc/ansible/hosts
- * An inventory file specified by `inventory=filepath` in an ansible config (`~/.ansible.cfg`)
+ * An inventory file specified by `inventory=filepath` in an ansible config
  * On the command-line via the -i flag
 
 
-The inventory file will typically contain hosts and users for each deployment
-environment. A typical hosts file setup for `stg` and `prd` environments looks
-like:
+git-deploy currently supports a single `app` role with multiple evironments.
+Support for further role-based deployment support is in the future roadmap.
+
+A typical hosts file setup for `stg` and `prd` environments looks like:
 
 ```
 [stg]
-staging-appserver.mydomain.com ansible_user=ansibleuser
+staging-appserver.mydomain.com ansible_user={{ application_user }}
 
 [prd]
-production-appserver.mydomain.com ansible_user=ansibleuser
+production-appserver.mydomain.com ansible_user={{ application_user }}
 ```
-
-Or if, for example, your user varies by project:
-
-```
-[stg]
-staging-appserver.mydomain.com ansible_user="{{ application_user }}"
-
-[prd]
-production-appserver.mydomain.com ansible_user="{{ application_user }}"
-```
-
-## Anatomy of a deploy directory
-
-### Config files
-
-The collection of config files is the basis for organizing the concept of
-deployment environments for a project. Config files are Ansible compatible
-Yaml files that contain the variables (or vault lookups) needed to deploy the
-project to a given deployment environment. Config files are named by convention
-as:
-
-```
-config._env_.yml
-```
-
-Where _env_ is the name of a deployment environment that **must match a group
-name** in the Ansible inventory configuration.
-
-Note that _common_ is a reserved name for the creation of a common config that
-is imported by the other configs. The common config file should be named:
-
-```
-config.common.yml
-```
-
-An example config stack might look like this:
-
-```
-config.common.yml
-config.stg.yml
-config.prd.yml
-config.prd_work.yml
-```
-
-Where **stg**, **prd**, and **prd_work** are all group names in the inventory
-file. E.g:
-
-/etc/ansible/hosts:
-
-```
-[stg]
-stg.example.com
-
-[prd]
-prd.example.com
-
-[prd_work]
-prd-work.example.com
-```
-
-
-### Custom playbooks
-
-Not yet implemented
-
-TBD:
- * start with _playbook_
- * contain names of environments they are associated with
- * are automatically run for deployment to associated environments
- * can be manually run associated environments and forced to any environment.
-
-File name format is: `playbook._name_._env1_._env2_ ... .yml`
-
-e.g.:
-
-```
-playbook.my-custom-playbook.stg.prd.yml
-```
-
-Will be executed after other playbooks on both stg, and prd.
-
----
-
 
 ## Additional First-time setup for each project
 
@@ -389,6 +302,4 @@ The simpler thing to do is probably deploy into user scope:
 ```
  $ pip install --user -e '.[test]'
 ```
-
-
 

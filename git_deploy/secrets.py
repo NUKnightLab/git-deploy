@@ -23,6 +23,12 @@ def secrets(
         None, "--version", callback=version_callback, is_eager=True
     ),
 ):
+    """
+    Manage env-specific ansible-vault secrets.
+
+    For the given configured deployment environment, execute a specified
+    ansible-vault command on the secrets file configured for that environment.
+    """
     ansible_vault(env.value, command.value)
 
 
