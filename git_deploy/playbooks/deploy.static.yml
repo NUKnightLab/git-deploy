@@ -5,8 +5,6 @@
     - "{{ vault }}"
   gather_facts: false
   become: yes
-  become_user: "{{ application_user }}"
-  become_method: sudo
 
   # Tasks should be run once all by the same host. Ansible's run_once
   # will delegate to the first relevant host. To be more specific, we may

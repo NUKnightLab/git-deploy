@@ -5,8 +5,6 @@
     - "{{ vault }}"
   gather_facts: false
   become: yes
-  become_user: "{{ application_user }}"
-  become_method: sudo
 
   # Deploy the environment deployment branch to remote hosts. This play does
   # not handle sync/update from development to deployment branches or push

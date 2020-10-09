@@ -6,8 +6,6 @@
     - "{{ vault }}"
   gather_facts: true
   become: yes
-  become_user: "{{ application_user }}"
-  become_method: sudo
   environment:
     PATH: "{{ ansible_env.PATH }}:/home/{{ application_user }}/.pyenv/shims"
   
@@ -45,8 +43,6 @@
         group: root
         mode: 0644
       become: yes
-      become_user: root
-      become_method: sudo
       notify:
         - restart appserver
         - restart nginx
@@ -81,14 +77,14 @@
     # Be sure service permissions are accessible by ansible user
     - name: make sure application server is running
       #  should we be using shell or command here instead of raw?
-      raw: if (sudo systemctl status {{ service_name }} |grep Stop); then sudo systemctl start {{ service_name }} ; fi
+      raw: if (systemctl status {{ service_name }} |grep Stop); then systemctl start {{ service_name }} ; fi
 
 
   handlers:
     - name: restart appserver
-      raw: sudo systemctl restart {{ service_name }}
+      raw: systemctl restart {{ service_name }}
     - name: restart nginx
-      shell: sudo systemctl restart nginx
+      shell: systemctl restart nginx
         warn=False
     - name: allow envrc
       shell: direnv allow .

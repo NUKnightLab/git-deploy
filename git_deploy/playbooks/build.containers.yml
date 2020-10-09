@@ -5,8 +5,6 @@
     - "{{ vault }}"
   gather_facts: false
   become: yes
-  become_user: "{{ application_user }}"
-  become_method: sudo
 
   # Build containers from the compose file
 
@@ -31,4 +29,4 @@
       args:
         chdir: "{{ deploy_dir }}"
     - name: restart nginx
-      shell: "sudo systemctl restart nginx"
+      shell: "systemctl restart nginx"

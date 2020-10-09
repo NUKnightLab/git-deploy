@@ -4,8 +4,6 @@
     - "{{ config_dir }}/config.{{ env }}.yml"
   gather_facts: false
   become: yes
-  become_user: "{{ application_user }}"
-  become_method: sudo
 
   # Note: Ansible's service module is pretty flaky. Not handling either start
   # or restart of Nginx, thus gross ugly sudo calls to service. Note that sudo
@@ -18,11 +16,14 @@
 
   tasks:
     - name: symlink nginx config
-      shell: sudo ln -sf {{ nginx_conf }} /etc/nginx/sites-enabled/{{ project_name }}
+      file:
+        src: "{{ nginx_conf }}"
+        dest: "/etc/nginx/sites-enabled/{{ project_name }}"
+        state: link 
       notify:
       - restart nginx
 
   handlers:
     - name: restart nginx
-      shell: sudo systemctl restart nginx
+      shell: systemctl restart nginx
         warn=False
