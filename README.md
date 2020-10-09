@@ -205,23 +205,21 @@ prd-work.example.com
 
 ### Custom playbooks
 
-Not yet implemented
+Playbooks are now explicitly listed in the common config, which can refer to
+builtin git-deploy playbooks, or to custom playbooks in the deploy directory.
 
-TBD:
- * start with _playbook_
- * contain names of environments they are associated with
- * are automatically run for deployment to associated environments
- * can be manually run associated environments and forced to any environment.
-
-File name format is: `playbook._name_._env1_._env2_ ... .yml`
-
-e.g.:
+E.g., in the following configuration, _playbook.work.yml_ is a custom playbook
+in the deploy dir:
 
 ```
-playbook.my-custom-playbook.stg.prd.yml
+playbooks:
+  - build.containers.yml
+  - deploy.web.yml
+  - playbook.work.yml
 ```
 
-Will be executed after other playbooks on both stg, and prd.
+TODO: Playbook execution should be environment specific.
+
 
 ---
 

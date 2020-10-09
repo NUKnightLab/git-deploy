@@ -2,7 +2,8 @@ import os
 from enum import Enum
 from pathlib import Path
 from git import Repo
-from .ansible import PLAYBOOKS_DIR, get_config_dir
+from .ansible import BUILTIN_PLAYBOOKS, CUSTOM_PLAYBOOKS
+from .ansible import get_config_dir
 from .repo import get_repository
 
 #repo = Repo(os.getcwd())
@@ -27,8 +28,6 @@ class SecretsCommands(str, Enum):
     rekey = "rekey"
 
 
-playbooks_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-        PLAYBOOKS_DIR)
 
 Playbooks = Enum('Playbooks', {
-    f.name:f.name for f in list(Path(playbooks_dir).glob('*.yml')) })
+    f.name:f.name for f in set(BUILTIN_PLAYBOOKS + CUSTOM_PLAYBOOKS) })
