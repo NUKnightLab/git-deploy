@@ -205,7 +205,7 @@ prd-work.example.com
 
 ### Custom playbooks
 
-Playbooks are now explicitly listed in the common config, which can refer to
+Playbooks are now explicitly listed in the configuration, which can refer to
 builtin git-deploy playbooks, or to custom playbooks in the deploy directory.
 
 E.g., in the following configuration, _playbook.work.yml_ is a custom playbook
@@ -218,7 +218,11 @@ playbooks:
   - playbook.work.yml
 ```
 
-TODO: Playbook execution should be environment specific.
+The playbook list is likely to be environment specific. It is possible to
+factor common components of the playlist into the common config. However,
+practically it is probably better to specify the whole list for each environment
+since the order of playbooks often matters and the order is not obvious when
+factored apart.
 
 
 ---

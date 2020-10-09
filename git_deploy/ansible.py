@@ -38,6 +38,16 @@ def common_config():
     if _common_config is None:
         _common_config = get_common_config()
     return _common_config
+
+
+def get_env_config(env):
+    config = common_config()
+    fn = os.path.join(get_config_dir(), f'config.{env}.yml')
+    with open(fn) as f:
+        cfg = yaml.safe_load(f)
+    config.update(cfg)
+    return config
+    
     
 
 
@@ -85,7 +95,7 @@ def deploy(env, version, *ansible_args):
             'checkout the %s version branch of git-deploy before executing.' % (
             gitdeploy_version, gitdeploy_version))
         sys.exit()
-    for book in common_config()['playbooks']:
+    for book in get_env_config(env)['playbooks']:
         if Path(playbook_path(book)) in BUILTIN_PLAYBOOKS:
             builtin_playbook(env, book, *ansible_args)
         elif Path(custom_playbook_path(book)) in CUSTOM_PLAYBOOKS:
