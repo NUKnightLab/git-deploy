@@ -60,7 +60,6 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
         command += f' {a}'
     command += f' -e env={env}'
     command += ' -e config_dir=%s' % get_config_dir()
-    command += ' -e vault_dir=%s' % get_vault_dir()
     if Path(vault).exists():
         command += f' -e vault={vault}'
     else:
