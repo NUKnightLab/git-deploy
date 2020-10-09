@@ -52,13 +52,19 @@ def get_env_config(env):
 
 
 def ansible_playbook(env, playbook, *ansible_args, **kwargs):
+    cfg = get_env_config(env)
+    vault_dir = get_vault_dir()
+    vault = os.path.join(vault_dir, cfg['project_name'], f'vault.{env}.yml')
     command = 'ansible-playbook'
     for a in ansible_args:
         command += f' {a}'
     command += f' -e env={env}'
-    #command += ' -e project_root=%s' % get_project_path()
     command += ' -e config_dir=%s' % get_config_dir()
     command += ' -e vault_dir=%s' % get_vault_dir()
+    if Path(vault).exists():
+        command += f' -e vault={vault}'
+    else:
+        print(f'[bold red] No vault file found at: {vault}. Executing without vault.')
     for k,v in kwargs.items():
         command += f' -e {k}={v}'
     command += f' {playbook}'

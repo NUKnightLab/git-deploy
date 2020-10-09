@@ -3,7 +3,7 @@
   vars_files:
     - "{{ config_dir }}/config.common.yml"
     - "{{ config_dir }}/config.{{ env }}.yml"
-    - "{{ vault_dir }}/{{ project_name }}/vault.{{ env }}.yml"
+    - "{{ vault }}"
   gather_facts: false
 
   tasks:
