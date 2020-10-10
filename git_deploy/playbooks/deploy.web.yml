@@ -5,15 +5,6 @@
   gather_facts: false
   become: yes
 
-  # Note: Ansible's service module is pretty flaky. Not handling either start
-  # or restart of Nginx, thus gross ugly sudo calls to service. Note that sudo
-  # is required here despite become/become_user/become_method. Don't shoot me,
-  # I'm just the messenger. Until Ansible sorts this out, we are burying
-  # warnings on these shell calls b/c Ansible whines about using sudo
-
-  # Ansible's privilege escalation not working correctly for file task with
-  # link mode, hence the shell call to link the nginx config.
-
   tasks:
     - name: symlink nginx config
       file:

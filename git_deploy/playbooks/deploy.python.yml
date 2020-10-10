@@ -8,15 +8,6 @@
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/home/{{ application_user }}/.pyenv/shims"
-  
-
-  # For whatever reason, for new deployments, it seems like nginx is not
-  # getting restarted at the right time. Thus for new deploys only, it is
-  # necessary to manually kick nginx.
-  #
-  # ^ this may no longer be true. Some changes were made b/c nginx was not
-  # restarting in general and might have fixed this for new deploys.
-  # See further notes in deploy.web.yml
 
   tasks:
 

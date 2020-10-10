@@ -5,12 +5,11 @@
     - "{{ vault }}"
   gather_facts: false
   become: yes
+  become_user: "{{ application_user }}"
 
   # Deploy the environment deployment branch to remote hosts. This play does
   # not handle sync/update from development to deployment branches or push
   # to remote repository -- run local.repository.yml for that
-
-  #version={{ env }}
 
   tasks:
     - name: clone/pull project repo

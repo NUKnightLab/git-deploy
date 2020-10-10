@@ -8,8 +8,6 @@
 
   # Build containers from the compose file
 
-  #version={{ env }}
-
   tasks:
     - name: create env setup script
       template:
