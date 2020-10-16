@@ -34,11 +34,11 @@ def playbook(
     Execute an env-specific git-deploy internal playbook.
 
     For the given env configuration, execute the specified Ansible playbook
-    from the available playbooks in git-deploy.
+    from the available playbooks in the project.
     """
-    from .ansible import builtin_playbook
+    from .ansible import ansible_playbook
     ansible_args = ctx.args 
-    builtin_playbook(env.value, playbook.value, *ansible_args)
+    ansible_playbook(env.value, playbook.value, *ansible_args)
 
 
 def run_playbook():

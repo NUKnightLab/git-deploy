@@ -8,8 +8,6 @@ from .sh import call
 from .repo import get_project_path
 from . import __version__
 
-_PLAYBOOKS_DIR = 'playbooks'
-
 
 def get_vault_dir():
     return os.environ.get('GIT_DEPLOY_VAULT_DIR')
@@ -19,9 +17,6 @@ def get_config_dir():
     return os.path.join(get_project_path(),
         os.environ.get('GIT_DEPLOY_PROJECT_CONFIG_DIR', 'deploy'))
 
-PLAYBOOKS_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), _PLAYBOOKS_DIR)
-BUILTIN_PLAYBOOKS = list(Path(PLAYBOOKS_DIR).glob('*.yml'))
 CUSTOM_PLAYBOOKS = list(Path(get_config_dir()).glob('playbook.*.yml'))
 
 
@@ -48,8 +43,6 @@ def get_env_config(env):
     config.update(cfg)
     return config
     
-    
-
 
 def ansible_playbook(env, playbook, *ansible_args, **kwargs):
     cfg = get_env_config(env)
@@ -77,19 +70,8 @@ def ansible_vault(env, command):
     call(command)
 
 
-def playbook_path(name):
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-        PLAYBOOKS_DIR)
-    return os.path.join(path, name)
-
-
 def custom_playbook_path(name):
     return os.path.join(get_config_dir(), name)
-
-
-def builtin_playbook(env, playbook_name, *ansible_args):
-    playbook = playbook_path(playbook_name)
-    ansible_playbook(env, playbook, *ansible_args)
 
 
 def deploy(env, version, *ansible_args):
@@ -101,9 +83,7 @@ def deploy(env, version, *ansible_args):
             gitdeploy_version, gitdeploy_version))
         sys.exit()
     for book in get_env_config(env)['playbooks']:
-        if Path(playbook_path(book)) in BUILTIN_PLAYBOOKS:
-            builtin_playbook(env, book, *ansible_args)
-        elif Path(custom_playbook_path(book)) in CUSTOM_PLAYBOOKS:
+        if Path(custom_playbook_path(book)) in CUSTOM_PLAYBOOKS:
             ansible_playbook(env, custom_playbook_path(book), *ansible_args)
         else:
             print(CUSTOM_PLAYBOOKS)

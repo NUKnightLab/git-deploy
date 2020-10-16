@@ -10,6 +10,7 @@
  * Introduces git-secrets and git-playbook commands
  * Aligns deployment environments with env config names, thus eliminating coersion from `stg` to, e.g. `stg_app`, `stg_work`. 
  * Changed to explicit specification of playbooks in config rather than implied book list from project type
+ * Eliminated builtin playbooks in favor of explicit playbooks for each project. Much less DRY overall, but also much less magical and more maintainable per project. See, e.g., Sandi Metz on [the wrong abstraction](https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction). Given that git-deploy is now pip installable, it seems counterproductive to have the playbooks burried inside the tool.
 
 # 1.0.5 (2020-09-21)
 

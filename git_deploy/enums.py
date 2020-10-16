@@ -2,11 +2,10 @@ import os
 from enum import Enum
 from pathlib import Path
 from git import Repo
-from .ansible import BUILTIN_PLAYBOOKS, CUSTOM_PLAYBOOKS
+from .ansible import CUSTOM_PLAYBOOKS
 from .ansible import get_config_dir
 from .repo import get_repository
 
-#repo = Repo(os.getcwd())
 repo = get_repository()
 
 Environments = Enum('Environments', {
@@ -28,6 +27,5 @@ class SecretsCommands(str, Enum):
     rekey = "rekey"
 
 
-
 Playbooks = Enum('Playbooks', {
-    f.name:f.name for f in set(BUILTIN_PLAYBOOKS + CUSTOM_PLAYBOOKS) })
+    f.name:f.name for f in CUSTOM_PLAYBOOKS })
