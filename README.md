@@ -99,7 +99,7 @@ of the repository if it exists.
 
 ### The git-deploy vault directory
 
-The following environment variables is supported across the git-deploy suite:
+The following environment variable is supported across the git-deploy suite:
 
  * **GIT_DEPLOY_VAULT_DIR**
 

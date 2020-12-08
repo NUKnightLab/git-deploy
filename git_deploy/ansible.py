@@ -47,16 +47,21 @@ def get_env_config(env):
 def ansible_playbook(env, playbook, *ansible_args, **kwargs):
     cfg = get_env_config(env)
     vault_dir = get_vault_dir()
-    vault = os.path.join(vault_dir, cfg['project_name'], f'vault.{env}.yml')
+    if vault_dir is None:
+        vault = None
+        print(f'[bold yellow] GIT_DEPLOY_VAULT_DIR not specified. Executing without vault.\n')
+    else:
+        vault = os.path.join(vault_dir, cfg['project_name'], f'vault.{env}.yml')
     command = 'ansible-playbook'
     for a in ansible_args:
         command += f' {a}'
     command += f' -e env={env}'
     command += ' -e config_dir=%s' % get_config_dir()
-    if Path(vault).exists():
-        command += f' -e vault={vault}'
-    else:
-        print(f'[bold red] No vault file found at: {vault}. Executing without vault.')
+    if vault is not None:
+        if Path(vault).exists():
+            command += f' -e vault={vault}'
+        else:
+            print(f'[bold red] No vault file found at: {vault}. Executing without vault.')
     for k,v in kwargs.items():
         command += f' -e {k}={v}'
     command += f' {playbook}'
@@ -81,6 +86,11 @@ def deploy(env, version, *ansible_args):
             '\nThis project is designed for git-deploy version %s. Please ' \
             'checkout the %s version branch of git-deploy before executing.' % (
             gitdeploy_version, gitdeploy_version))
+        sys.exit()
+    conf = get_env_config(env)
+    if not 'playbooks' in conf:
+        print('[bold red]' \
+            '\nplaybooks required in deploy config as of git-deploy 1.06')
         sys.exit()
     for book in get_env_config(env)['playbooks']:
         if Path(custom_playbook_path(book)) in CUSTOM_PLAYBOOKS:
