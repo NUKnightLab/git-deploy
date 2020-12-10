@@ -1,4 +1,4 @@
-from .repo import verify_repo, get_project_path
+from ..repo import verify_repo, get_project_path
 verify_repo('git-secrets')
 
 import os
