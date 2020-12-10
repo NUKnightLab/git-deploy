@@ -1,7 +1,6 @@
-__version__='1.0.6'
+from .. import __version__
 
 
-import os
 import typer
 
 

@@ -2,7 +2,7 @@
 # error message, we need to do this within each command module, which also
 # means that the load_dotenv has to happen within each module instead of a
 # common location.
-from .repo import verify_repo, get_project_path
+from ..repo import verify_repo, get_project_path
 verify_repo('git-deploy')
 
 import os
@@ -13,8 +13,8 @@ from typing import List, Optional
 from rich import print
 import typer
 from . import version_callback
-from .ansible import deploy as ansible_deploy
-from .enums import Environments, Versions, Playbooks
+from ..ansible import deploy as ansible_deploy
+from ..enums import Environments, Versions, Playbooks
 
 
 context_settings = {

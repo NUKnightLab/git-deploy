@@ -75,11 +75,11 @@ setup(
     },
     license='MIT',
     version=VERSION,
-    packages=['git_deploy'],
+    packages=['gitdeploy'],
     entry_points="""
         [console_scripts]
-        git-deploy=git_deploy.deploy:run_deploy
-        git-secrets=git_deploy.secrets:run_secrets
+        git-deploy=gitdeploy.cli.deploy:run_deploy
+        git-secrets=gitdeploy.cli.secrets:run_secrets
     """,
     install_requires=[
         'GitPython',

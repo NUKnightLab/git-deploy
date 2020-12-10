@@ -8,8 +8,8 @@ load_dotenv(dotenv_path=os.path.join(get_project_path(), '.env'))
 from typing import Optional
 import typer
 from . import version_callback
-from .ansible import ansible_vault
-from .enums import Environments, SecretsCommands
+from ..ansible import ansible_vault
+from ..enums import Environments, SecretsCommands
 
 
 secrets_app = typer.Typer()
