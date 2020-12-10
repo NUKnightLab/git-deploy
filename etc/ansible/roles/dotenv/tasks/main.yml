@@ -9,4 +9,4 @@
     dest="{{ deploy_dir }}/.envrc"
   notify:
     - allow envrc
-    - restart appserver
+    - restart service
