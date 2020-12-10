@@ -12,36 +12,66 @@ should not be a necessary requirement.
 
 ## Installation
 
-To install the latest version of the full suite of git-deploy tools:
+As deploy configurations are tied to a specific git-deploy version, it is
+recommended that you install to your projects virtualenvironment with the
+git-deploy version specified. E.g.:
 
 ```
- $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git
+ $ pip install git+https://github.com/NUKnightLab/git-deploy.git@1.0.6
 ```
 
-A version may be specified, e.g.:
+## Additional setup
 
-```
- $ pip install --user git+https://github.com/NUKnightLab/git-deploy.git@1.0.6
-```
+If your project has not already been setup for git-deploy, do these
+additional steps:
+
+ * Create a `deploy` directory in your project root with a `config.common.yml`
+   file and `config.<env>.yml` environment specific files. See `Advanced Usage`
+   below for information on using an alternative project-relative location.
+   See the `config-vars.md` file for a summary of configs required for each
+   playbook. See below for more information about config file formats.
+   the `AWS setup for S3 static file deployment` section below for more information
+ * Create ansible playbooks to be executed and reference them in the playbooks
+   variable in the configs
+
+
+### (optional) Ansible roles
+
+A set of [ansible roles](https://github.com/NUKnightLab/git-deploy/tree/1.0.6/etc/ansible/roles)
+is provided in the git-deploy GitHub repository. Those roles can be copied as-is
+into /etc/ansible/roles. The missing variables that you will need in your config
+can be teased out by attempted runs of `git deploy`.
+
+
+### Playbooks
+
+Playbooks should be located in the project deploy directory using the naming
+convention: playbook.<type>.yml
+
+Playbooks should be referenced by the `playbooks` variable in the configs.
+Alternatively, specify the `--playbook` option on the command line.
+
+### git-deploy configs
+
+Configs are actually ansible variable files which should be referenced by the
+playbook.
+
+The convention is to name the config according to the deployment environment
+and to reference the `env` variable when loading vars_files. See the examples
+folder for details.
+
+Note that __env__ should match a labeled host configuration in /etc/ansible/hosts.
 
 
 ## Usage
 
-Type an empty subcommand to get help from the cli:
-
-```
- $ git deploy
- $ git secrets
-```
-
-For more detailed help, the full hyphenated command name must be specifed for
-the --help flag, due to the way git processes this flag:
+Due to the way subcommand help is handled, the best way to get help is by
+calling the dashed command instead of calling it as a subcommand:
 
 ```
  $ git-deploy --help
  $ git-secrets --help
 ```
-
 
 ### Some useful options
 
@@ -220,27 +250,6 @@ command-line option which may be specified multiple times in the command.
 
 
 ## Additional First-time setup for each project
-
-If your project has not already been setup for git-deploy, do these
-additional steps:
-
- * create a `deploy` directory in your project root with a `config.common.yml`
-   file and `config.<env>.yml` environment specific files. See `Advanced Usage`
-   below for information on using an alternative project-relative location.
-   See the `config-vars.md` file for a summary of configs required for each
-   playbook. See below for more information about config file formats.
- * create environment specific branches for deployment
- * Setup a remote delegated static sync host for S3 sync with the AWS CLI. See
-   the `AWS setup for S3 static file deployment` section below for more information
-
-
-## Extra playbooks
-
-git-deploy has a set of builtin playbooks useful for most projects. Projects
-that require some extra work can use custom playbooks. These are standard
-Ansible playbooks that go in the deploy directory for the project and are
-named playbook.*.yml. Playbooks in that format will be automatically executed
-after the standard playbook set.
 
 
 ### AWS setup for S3 static file deployment
