@@ -93,23 +93,33 @@ This means:
     - GIT_DEPLOY_VAULT_PASSWORD_FILE
 
 
-git-deploy will attempt to load environment variables from a .env file in the root
-of the repository if it exists.
+git-deploy will attempt to load environment variables from .env in the root of
+the repository if it exists.
 
 
 ### The git-deploy vault directory
 
 The following environment variable is supported across the git-deploy suite:
 
- * **GIT_DEPLOY_VAULT_DIR**
+ * **GIT_DEPLOY_VAULT_DIR** Defaults to ~/.vault
+
+**GIT_DEPLOY_VAULT_DIR must be specified or ~/.vault must exist if vaulted secrets are used**.
 
 Since there is no longer a GIT_DEPLOY_ASSETS_DIR, there is also not a default
-vault dir at that location. **GIT_DEPLOY_VAULT_DIR must be specified if vaulted
-secrets are used**.
+vault dir at that location. The default vault directory is now ~/.vault, which
+may be a simlink to the actual vault location. The vault directory should
+contain sub-directories of vaults by project name.
 
+### The vault password
 
+The vault password can be specified in either of the following ways:
 
-### Legacy setup for git-deploy <= 1.0.5
+ * ANSIBLE_VAULT_PASSWORD_FILE environment variable (recommended)
+ * --vault-password-file cli flag. E.g. `git deploy stg v1.0 --vault-password-file /path/to/vault/password/file`
+
+**Use of --vault-id is strongly discouraged** as [there seem to be issues with its reliabilityl](https://github.com/ansible-community/ansible-vault/issues/183)
+
+## Legacy setup for git-deploy <= 1.0.5
 
 
 See the legacy README doc if you need to install a version of git-deploy older
@@ -164,10 +174,10 @@ project to a given deployment environment. Config files are named by convention
 as:
 
 ```
-config._env_.yml
+config.env.yml
 ```
 
-Where _env_ is the name of a deployment environment that **must match a group
+Where env is the name of a deployment environment that **must match a group
 name** in the Ansible inventory configuration.
 
 Note that _common_ is a reserved name for the creation of a common config that

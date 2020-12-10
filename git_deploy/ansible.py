@@ -9,8 +9,24 @@ from .repo import get_project_path
 from . import __version__
 
 
-def get_vault_dir():
-    return os.environ.get('GIT_DEPLOY_VAULT_DIR')
+def get_vault(env, project_name):
+    vault_dir = os.environ.get('GIT_DEPLOY_VAULT_DIR')
+    if vault_dir:
+        vault_path = Path(vault_dir) / project_name / f'vault.{env}.yml'
+        if not vault_path.exists():
+            print(f'[bold red]' \
+            'No vault file found at: {vault_path}. Executing without vault.\n')
+    else:
+        vault_path = Path.home() / '.vault' / project_name / f'vault.{env}.yml'
+        if not vault_path.exists():
+            print(f'[bold yellow]'\
+            'No vault file available. Executing without vault.\n')
+    if vault_path.exists():
+        return vault_path
+    #if vault_dir == '~/.vault':
+    #    print(f'[bold yellow] GIT_DEPLOY_VAULT_DIR not specified. Executing without vault.\n')
+    #else:
+    #    print(f'[bold red] No vault file found at: {vault_path}. Executing without vault.')
 
 
 def get_config_dir():
@@ -46,22 +62,19 @@ def get_env_config(env):
 
 def ansible_playbook(env, playbook, *ansible_args, **kwargs):
     cfg = get_env_config(env)
-    vault_dir = get_vault_dir()
-    if vault_dir is None:
-        vault = None
-        print(f'[bold yellow] GIT_DEPLOY_VAULT_DIR not specified. Executing without vault.\n')
-    else:
-        vault = os.path.join(vault_dir, cfg['project_name'], f'vault.{env}.yml')
+    vault = get_vault(env, cfg['project_name'])
     command = 'ansible-playbook'
     for a in ansible_args:
         command += f' {a}'
     command += f' -e env={env}'
     command += ' -e config_dir=%s' % get_config_dir()
+    #command += ' --vault-id knightlab@/Users/scott/.vault.password'
+    #command += ' --vault-id /Users/scott/.vault.password'
+    #command += ' --vault-id knightlab'
+    #command += ' --vault-password-file ~/.vault.password.knightlab'
+    #command += ' --vault-password-file ~/.vault.password'
     if vault is not None:
-        if Path(vault).exists():
-            command += f' -e vault={vault}'
-        else:
-            print(f'[bold red] No vault file found at: {vault}. Executing without vault.')
+        command += f' -e vault={vault}'
     for k,v in kwargs.items():
         command += f' -e {k}={v}'
     command += f' {playbook}'
@@ -70,7 +83,8 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
 
 def ansible_vault(env, command):
     project_name = common_config()['project_name']
-    vault_file = os.path.join(get_vault_dir(), project_name, f'vault.{env}.yml')
+    #vault_file = os.path.join(get_vault_dir(), project_name, f'vault.{env}.yml')
+    vault_file = get_vault(env, project_name)
     command = f'ansible-vault {command} {vault_file}'
     call(command)
 
