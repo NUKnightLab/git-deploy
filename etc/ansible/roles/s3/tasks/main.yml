@@ -1,0 +1,3 @@
+- name: sync directory to s3
+  run_once: true
+  shell: aws s3 sync --acl public-read {{ s3_src_dir }} {{ s3_dest }}
