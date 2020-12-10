@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from .ansible import get_config_dir
+from .config import get_config_dir
 from .repo import get_repository
 
 CUSTOM_PLAYBOOKS = list(Path(get_config_dir()).glob('playbook.*.yml'))

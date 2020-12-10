@@ -1,7 +1,0 @@
-domains: "stg-storymap.knightlab.com"
-
-init_env_stg:
-  MY_STG_VAR: "This is staging"
-
-init_env: "{{ init_env_common|combine(init_env_stg) }}"
-service_exec: "{{ virtualenv}}/bin/gunicorn -b :{{ service_port }} --workers 1 --reload {{ wsgi_application }}"
