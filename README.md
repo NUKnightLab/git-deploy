@@ -3,9 +3,8 @@
 A suite of git subcommands for managing deployment-related operations for
 git repository-based deployments. Currently includes:
 
- * git-deploy: deploy a project repository to an environment-specific config (e.g. stg, prd)
+ * git-deploy: deploy a project to an environment-specific ansible configuration (e.g. stg, prd)
  * git-secrets: manage ansible-vault secrets for a git-deploy configured project
- * git-playbook: run one of the git-deploy builtin playbooks (custom playbooks tbd)
 
 `git-deploy` tools are mostly just opinionated scaffolding around Ansible. 
 Ansible knowledge is helpful for debugging and working through issues, but
@@ -33,7 +32,6 @@ Type an empty subcommand to get help from the cli:
 ```
  $ git deploy
  $ git secrets
- $ git playbook
 ```
 
 For more detailed help, the full hyphenated command name must be specifed for
@@ -42,7 +40,6 @@ the --help flag, due to the way git processes this flag:
 ```
  $ git-deploy --help
  $ git-secrets --help
- $ git-playbook --help
 ```
 
 
@@ -215,25 +212,9 @@ prd-work.example.com
 
 ### Custom playbooks
 
-Playbooks are now explicitly listed in the configuration, which can refer to
-builtin git-deploy playbooks, or to custom playbooks in the deploy directory.
-
-E.g., in the following configuration, _playbook.work.yml_ is a custom playbook
-in the deploy dir:
-
-```
-playbooks:
-  - build.containers.yml
-  - deploy.web.yml
-  - playbook.work.yml
-```
-
-The playbook list is likely to be environment specific. It is possible to
-factor common components of the playlist into the common config. However,
-practically it is probably better to specify the whole list for each environment
-since the order of playbooks often matters and the order is not obvious when
-factored apart.
-
+As of git-deploy 1.06, there are no longer builtin playbooks. All playbooks
+must be specified either by the playbooks variable, or by the the --playbook
+command-line option which may be specified multiple times in the command.
 
 ---
 
