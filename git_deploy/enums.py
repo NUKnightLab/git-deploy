@@ -1,10 +1,9 @@
-import os
 from enum import Enum
 from pathlib import Path
-from git import Repo
-from .ansible import CUSTOM_PLAYBOOKS
 from .ansible import get_config_dir
 from .repo import get_repository
+
+CUSTOM_PLAYBOOKS = list(Path(get_config_dir()).glob('playbook.*.yml'))
 
 repo = get_repository()
 
