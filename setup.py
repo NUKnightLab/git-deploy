@@ -75,7 +75,7 @@ setup(
     },
     license='MIT',
     version=VERSION,
-    packages=['git-deploy'],
+    packages=['git_deploy'],
     entry_points="""
         [console_scripts]
         git-deploy=git_deploy.deploy:run_deploy
