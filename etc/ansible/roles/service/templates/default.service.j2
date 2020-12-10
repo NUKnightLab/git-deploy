@@ -1,0 +1,13 @@
+[Unit]
+Description={{ service_name }}
+After=network.target
+
+[Service]
+User={{ application_user }}
+Group={{ application_group }}
+WorkingDirectory={{ application_dir }}
+EnvironmentFile={{ env_file }}
+ExecStart={{ service_exec }}
+
+[Install]
+WantedBy=multi-user.target

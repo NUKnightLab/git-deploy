@@ -1,0 +1,12 @@
+- name: reload systemctl
+  become: yes
+  shell: systemctl daemon-reload
+
+- name: restart service
+  raw: sudo systemctl restart {{ service_name }}
+
+- name: restart nginx
+  become: yes
+  shell: systemctl restart nginx
+    warn=False
+

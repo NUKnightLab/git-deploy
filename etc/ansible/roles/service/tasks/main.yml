@@ -1,0 +1,16 @@
+- name: Create systemd service config
+  template:
+    src: "{{ service_template }}"
+    dest: "/etc/systemd/system/{{ service_name }}.service"
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  notify:
+    - reload systemctl
+    - restart service
+    - restart nginx
+
+- name: ensure service is running
+  #  should we be using shell or command here instead of raw?
+  raw: if (sudo systemctl status {{ service_name }} |grep Stop); then sudo systemctl start {{ service_name }} ; fi
