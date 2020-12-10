@@ -3,11 +3,30 @@
 # template directory, and specify the custom template's file name as the
 # nginx_template variable. Do not use nginx.conf.j2 as the custom template name.
 
+{% if cnames is defined %}
+server {
+  listen 80;
+  server_name {{ cnames }};
+  return 301 https://{{ domains }}$request_uri;
+}
+{% endif %}
+
 server {
   listen 80;
   server_name {{ domains }};
   return 301 https://$server_name$request_uri;
 }
+
+{% if cnames is defined %}
+server {
+  listen 443 ssl;
+  server_name {{ cnames }};
+  return 301 https://{{ domains }}$request_uri;
+
+  {{ ssl_certs }} 
+  ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
+}
+{% endif %}
 
 server {
   listen 443 ssl;

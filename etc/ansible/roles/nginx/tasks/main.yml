@@ -1,7 +1,7 @@
 - name: create nginx config
   become: yes
   template:
-    src: "templates/{{ nginx_template }}"
+    src: "{{ nginx_template }}"
     dest: "/etc/nginx/sites-available/{{ service_name }}"
   notify:
   - restart nginx
