@@ -1,0 +1,7 @@
+- name: allow envrc
+  shell: direnv allow .
+  args:
+    chdir: "{{ deploy_dir }}"
+
+- name: restart service
+  raw: sudo systemctl restart {{ service_name }}
