@@ -1,0 +1,2 @@
+- name: restart application
+  raw: sudo systemctl restart {{ service_name }}
