@@ -1,0 +1,15 @@
+# build from the compose file and run any specified commands
+
+- name: build containers
+  docker_compose:
+    build: yes
+    restarted: yes
+    files:
+      - "{{ docker_compose_file }}"
+    project_src: "{{ deploy_dir }}"
+- name: run scripts
+  when: docker_compose_commands is defined
+  with_items: "{{ docker_compose_commands }}"
+  shell: "docker-compose -f {{ docker_compose_file }} run {{ item }}"
+  args:
+    chdir: "{{ deploy_dir }}"
