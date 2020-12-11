@@ -1,8 +1,10 @@
 *.retry
 .DS_Store
 
+# allow for some custom roles
 etc/ansible/roles/knightlab/
 etc/ansible/roles/custom/
+etc/ansible/roles/deploy/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
