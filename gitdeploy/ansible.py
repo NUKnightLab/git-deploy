@@ -77,7 +77,7 @@ def deploy(env, version:str, *ansible_args, playbooks=None) -> None:
             print('[bold red]playbooks must be specified')
             sys.exit()
     for book in playbooks:
-        if Path(playbook_path(book)) in PLAYBOOKS:
+        if book in PLAYBOOKS:
             ansible_playbook(env, playbook_path(book), *ansible_args)
         else:
             print(f'[bold red]Unknown playbook: {book}')
