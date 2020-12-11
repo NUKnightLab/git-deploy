@@ -6,7 +6,6 @@ from rich import print
 from dotenv import load_dotenv
 from .config import get_env_config, get_config_dir, get_common_config
 from .enums import PLAYBOOKS, Playbooks
-from .sh import call
 from . import __version__
 
 

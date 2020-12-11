@@ -26,6 +26,13 @@ git-deploy version specified. E.g.:
 * **ANSIBLE_VAULT_PASSWORD_FILE** Needed if you are using ansible-vault to maintain secrets
 
 
+### Alternate ansible hosts inventory
+
+E.g., if you are supporting multiple organizations or configurations, you may
+need an alternate hosts file. This can be set with ansible configs, such as
+with the **ANSIBLE_INVENTORY** environment variable.
+
+
 ## Additional setup
 
 The easiest way to see what needs to be done for an initial git-deploy setup is
