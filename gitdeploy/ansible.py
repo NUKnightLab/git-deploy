@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 from rich import print
 from dotenv import load_dotenv
 from .config import get_env_config, get_config_dir, get_common_config
@@ -9,14 +10,14 @@ from .enums import PLAYBOOKS, Playbooks
 from . import __version__
 
 
-def call(command, **kwargs):
+def call(command:str, **kwargs) -> int:
     if kwargs:
         command = command % kwargs
     print(f'[bold green underline]Executing[/bold green underline][green]: {command}')
     return subprocess.call(command.split())
 
 
-def get_vault(env, project_name):
+def get_vault(env:str, project_name) -> Optional[Path]:
     vault_dir = os.environ.get('GIT_DEPLOY_VAULT_DIR')
     if vault_dir:
         vault_path = Path(vault_dir) / project_name / f'vault.{env}.yml'
@@ -30,9 +31,10 @@ def get_vault(env, project_name):
             'No vault file available. Executing without vault.\n')
     if vault_path.exists():
         return vault_path
+    return None
 
 
-def ansible_playbook(env, playbook, *ansible_args, **kwargs):
+def ansible_playbook(env:str, playbook:str, *ansible_args, **kwargs) -> None:
     cfg = get_env_config(env)
     vault = get_vault(env, cfg['project_name'])
     command = 'ansible-playbook'
@@ -48,18 +50,18 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
     call(command)
 
 
-def ansible_vault(env, command):
+def ansible_vault(env, command:str) -> None:
     project_name = get_common_config()['project_name']
     vault_file = get_vault(env, project_name)
     command = f'ansible-vault {command} {vault_file}'
     call(command)
 
 
-def playbook_path(name):
+def playbook_path(name:str) -> str:
     return os.path.join(get_config_dir(), name)
 
 
-def deploy(env, version, *ansible_args, playbooks=None):
+def deploy(env, version:str, *ansible_args, playbooks=None) -> None:
     gitdeploy_version = get_common_config().get('gitdeploy_version')
     if gitdeploy_version and gitdeploy_version != __version__:
         print('[bold red]' \
