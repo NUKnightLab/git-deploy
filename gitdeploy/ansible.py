@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 from rich import print
 from dotenv import load_dotenv
-from .config import get_env_config, get_config_dir, common_config
-from .enums import CUSTOM_PLAYBOOKS, Playbooks
+from .config import get_env_config, get_config_dir, get_common_config
+from .enums import PLAYBOOKS, Playbooks
 from .sh import call
 from . import __version__
 
@@ -42,18 +42,18 @@ def ansible_playbook(env, playbook, *ansible_args, **kwargs):
 
 
 def ansible_vault(env, command):
-    project_name = common_config()['project_name']
+    project_name = get_common_config()['project_name']
     vault_file = get_vault(env, project_name)
     command = f'ansible-vault {command} {vault_file}'
     call(command)
 
 
-def custom_playbook_path(name):
+def playbook_path(name):
     return os.path.join(get_config_dir(), name)
 
 
 def deploy(env, version, *ansible_args, playbooks=None):
-    gitdeploy_version = common_config().get('gitdeploy_version')
+    gitdeploy_version = get_common_config().get('gitdeploy_version')
     if gitdeploy_version and gitdeploy_version != __version__:
         print('[bold red]' \
             '\nThis project is designed for git-deploy version %s. Please ' \
@@ -68,8 +68,8 @@ def deploy(env, version, *ansible_args, playbooks=None):
             print('[bold red]playbooks must be specified')
             sys.exit()
     for book in playbooks:
-        if Path(custom_playbook_path(book)) in CUSTOM_PLAYBOOKS:
-            ansible_playbook(env, custom_playbook_path(book), *ansible_args)
+        if Path(playbook_path(book)) in PLAYBOOKS:
+            ansible_playbook(env, playbook_path(book), *ansible_args)
         else:
             print(f'[bold red]Unknown playbook: {book}')
     print('\n[green]Done')

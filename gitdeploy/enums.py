@@ -3,7 +3,7 @@ from pathlib import Path
 from .config import get_config_dir
 from .repo import get_repository
 
-CUSTOM_PLAYBOOKS = list(Path(get_config_dir()).glob('playbook.*.yml'))
+PLAYBOOKS = list(Path(get_config_dir()).glob('playbook.*.yml'))
 
 repo = get_repository()
 
@@ -27,4 +27,4 @@ class SecretsCommands(str, Enum):
 
 
 Playbooks = Enum('Playbooks', {
-    f.name:f.name for f in CUSTOM_PLAYBOOKS })
+    f.name:f.name for f in PLAYBOOKS })
