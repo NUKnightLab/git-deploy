@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from pathlib import Path
 from rich import print
@@ -7,6 +8,13 @@ from .config import get_env_config, get_config_dir, get_common_config
 from .enums import PLAYBOOKS, Playbooks
 from .sh import call
 from . import __version__
+
+
+def call(command, **kwargs):
+    if kwargs:
+        command = command % kwargs
+    print(f'[bold green underline]Executing[/bold green underline][green]: {command}')
+    return subprocess.call(command.split())
 
 
 def get_vault(env, project_name):

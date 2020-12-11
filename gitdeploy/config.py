@@ -8,13 +8,6 @@ def get_config_dir():
         os.environ.get('GIT_DEPLOY_PROJECT_CONFIG_DIR', 'deploy'))
 
 
-#def get_common_config():
-#    fn = os.path.join(get_config_dir(), 'config.common.yml')
-#    with open(fn) as f:
-#        cfg = yaml.safe_load(f)
-#    return cfg
-
-
 _common_config = None
 def get_common_config():
     global _common_config
