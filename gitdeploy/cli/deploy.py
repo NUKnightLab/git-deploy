@@ -47,7 +47,10 @@ def deploy(
     env = env.value
     project_version = project_version.value
     ansible_args = ctx.args 
-    ansible_args.extend(['-e', f'project_version={project_version}'])
+    ansible_args.extend([
+        '-e', f'project_version={project_version}',
+        '-e', f'project_root={get_project_path()}',
+    ])
     print(
         '[blue]Passing arguments to ansible commands:[/blue] %s\n' %
         ' '.join(ansible_args))

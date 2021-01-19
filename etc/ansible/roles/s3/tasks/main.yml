@@ -1,3 +1,17 @@
+# To test your aws cli configuration for this notebook, run the following
+# dryrun in the project environment:
+# aws s3 sync --dryrun --acl public-read dist/ s3://cdn.knightlab.com/libs/storymapjs/test/
+
+# See the aws cli docs for precedence rules on how AWS credentials are selected
+# using environment variables. Your local working project environment must have
+# aws cli permissions to sync to s3 in order for this playbook to work.
+
+- name: log aws cli info
+  ansible.builtin.debug:
+    msg:
+      - "$AWS_PROFILE: {{ lookup('env', 'AWS_PROFILE') }}"
+      - "$AWS_ACCESS_KEY_ID: {{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+      - "$AWS_SECRET_ACCESS_KEY: {{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
 - name: sync directory to s3
   run_once: true
-  shell: aws s3 sync --acl public-read {{ s3_src_dir }} {{ s3_dest }}
+  local_action: command aws s3 sync --acl public-read {{ s3_src_dir }} {{ s3_dest }}
