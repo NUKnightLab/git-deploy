@@ -6,6 +6,7 @@
 # using environment variables. Your ansible environment must have aws cli
 # permissions to sync to s3 in order for this playbook to work.
 
+
 - name: log aws cli info
   ansible.builtin.debug:
     msg:
@@ -14,4 +15,15 @@
       - "$AWS_SECRET_ACCESS_KEY: {{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
 - name: sync directory to s3
   run_once: true
-  shell: command aws s3 sync --acl public-read {{ s3_src_dir }} {{ s3_dest }}
+  shell: command aws s3 sync --acl public-read {{ s3_src_dir }} {{ s3_dest }} --delete
+
+# Legacy code here that experimentally dealt with --sync possibly not always
+# working correctly from not detecting file changes, but this seems maybe to
+# have been a non-issue.
+
+#- name: copy directory to s3
+#  run_once: true
+#  shell: command aws s3 cp --acl public-read {{ s3_src_dir }} {{ s3_dest }}
+#- name: remove deleted files from s3
+#  run_once: true
+#  shell: command aws s3 sync --acl public-read {{ s3_src_dir }} {{ s3_dest }} --delete

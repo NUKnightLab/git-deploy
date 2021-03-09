@@ -17,7 +17,7 @@ recommended that you install to your projects virtualenvironment with the
 git-deploy version specified. E.g.:
 
 ```
- $ pip install git+https://github.com/NUKnightLab/git-deploy.git@1.0.6
+ $ pip install -e git+https://github.com/NUKnightLab/git-deploy.git@1.0.6#egg=git-deploy
 ```
 
 ## Environment variables
