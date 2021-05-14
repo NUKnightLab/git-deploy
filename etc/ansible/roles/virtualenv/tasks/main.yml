@@ -1,9 +1,11 @@
+- name: create virtualenv
+  shell:
+    cmd: "{{ python }} -m venv {{ virtualenv }} --prompt {{ project_name }}"
 - name: install python packages
   environment:
     PATH: "{{ exec_path|default(omit) }}"
   pip:
     requirements: "{{ requirements_file }}"
     virtualenv: "{{ virtualenv }}"
-    virtualenv_command: "{{ python }} -m venv --prompt {{ project_name }}"
   notify:
     - restart application
