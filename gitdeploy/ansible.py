@@ -23,7 +23,7 @@ def get_vault(env:str, project_name) -> Optional[Path]:
         vault_path = Path(vault_dir) / project_name / f'vault.{env}.yml'
         if not vault_path.exists():
             print(f'[bold red]' \
-            'No vault file found at: {vault_path}. Executing without vault.\n')
+            f'No vault file found at: {vault_path}. Executing without vault.\n')
     else:
         vault_path = Path.home() / '.vault' / project_name / f'vault.{env}.yml'
         if not vault_path.exists():
