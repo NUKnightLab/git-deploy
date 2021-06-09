@@ -1,3 +1,14 @@
+# `direnv allow` does not actually appear to be working. We have tried this with
+# shell, cmd, and raw, with become_user, with full paths to the direnv command and
+# the direnv file. Changes to direnv still have to be manually allowed on remote.
+
+# There is no indication as to why this does not work. direnv allow simply writes a
+# hashed file to ~/.local/share/direnv/allow. The attempt in ansible simply fails
+# without any errors.
+
+# There is an open question regarding this issue here:
+# https://github.com/direnv/direnv/issues/382#issuecomment-831321537
+
 - name: allow envrc
   shell: direnv allow .
   args:
