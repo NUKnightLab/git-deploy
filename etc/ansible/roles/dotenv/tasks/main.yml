@@ -1,12 +1,12 @@
 - name: create env file
   template:
     src=templates/dotenv.j2
-    dest="{{ deploy_dir }}/.env"
+    dest="{{ env_file }}"
 
 - name: create envrc file
   template:
     src=templates/envrc.j2
-    dest="{{ deploy_dir }}/.envrc"
+    dest="{{ envrc_file }}"
   notify:
     - allow envrc
     - restart service
