@@ -1,6 +1,6 @@
 - name: create virtualenv
   shell:
-    cmd: "~/.pyenv/versions/{{ python_version }}/bin/python -m venv {{ virtualenv }} --prompt {{ project_name }}"
+    cmd: "~/.pyenv/versions/{{ python_version }}/bin/python -m venv {{ virtualenv }}"
 - name: install python packages
   environment:
     PATH: "{{ exec_path|default(omit) }}"
