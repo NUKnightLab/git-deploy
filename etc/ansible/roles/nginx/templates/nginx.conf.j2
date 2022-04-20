@@ -39,8 +39,8 @@ server {
   access_log  /var/log/nginx/{{ service_name }}.log;
   client_max_body_size {{ nginx_client_max_body_size }};
 
-  {% if static_root is defined %}
-    root {{ static_root }};
+  {% if nginx_file_root is defined %}
+    root {{ nginx_file_root }};
   {% else %}
     root /usr/share/nginx/{{ service_name }};
   {% endif %}
