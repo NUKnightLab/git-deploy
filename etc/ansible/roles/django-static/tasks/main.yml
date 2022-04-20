@@ -1,0 +1,9 @@
+- name: Collect static files
+  environment:
+    STATIC_ROOT: "{{ static_root }}"
+  community.general.django_manage:
+    command: collectstatic
+    project_path: "{{ deploy_dir }}"
+    virtualenv: "{{ virtualenv }}"
+  notify:
+  - restart nginx
