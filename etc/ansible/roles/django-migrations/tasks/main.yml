@@ -1,8 +1,8 @@
-- name: Collect static files
+- name: Run database migrations
   environment: "{{ init_env }}"
   community.general.django_manage:
-    command: collectstatic
+    command: migrate
     project_path: "{{ deploy_dir }}"
     virtualenv: "{{ virtualenv }}"
   notify:
-  - restart nginx
+  - restart application

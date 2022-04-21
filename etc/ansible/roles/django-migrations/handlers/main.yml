@@ -1,0 +1,4 @@
+- name: restart application
+  become: yes
+  shell: systemctl restart {{ service_name }}
+    warn=False
