@@ -1,4 +1,9 @@
+#- name: restart nginx
+#  become: yes
+#  shell: systemctl restart nginx
+#    warn=False
+
 - name: restart nginx
-  become: yes
-  shell: systemctl restart nginx
-    warn=False
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
