@@ -1,4 +1,5 @@
-- name: restart nginx
-  become: yes
-  shell: systemctl restart nginx
-    warn=False
+# Do not use. Source the nginx role for nginx restart
+#- name: restart nginx
+#  become: yes
+#  shell: systemctl restart nginx
+#    warn=False

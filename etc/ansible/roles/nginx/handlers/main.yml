@@ -3,7 +3,16 @@
 #  shell: systemctl restart nginx
 #    warn=False
 
+#- name: restart nginx
+#  ansible.builtin.service:
+#    name: nginx
+#    state: restarted
+
+
+# Restarts should now reference nginx-restart instead of `restart nginx`
 - name: restart nginx
+  listen: nginx-restart
+  become: yes
   ansible.builtin.service:
     name: nginx
     state: restarted

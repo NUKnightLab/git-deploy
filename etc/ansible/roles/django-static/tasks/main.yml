@@ -1,8 +1,30 @@
+#- name: Collect static files
+#  environment: "{{ init_env }}"
+#  community.general.django_manage:
+#    command: collectstatic
+#    project_path: "{{ deploy_dir }}"
+#    virtualenv: "{{ virtualenv }}"
+#  notify:
+#  - restart nginx
+
+
+# New task handling ensures existing static location owned by the application user
+
+- name: Ensure STATIC_ROOT exists and is writable by deploy user
+  become: yes
+  ansible.builtin.file:
+    path: "{{ static_root }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_user }}"
+    mode: '0755'
+
 - name: Collect static files
-  environment: "{{ init_env }}"
+  become: yes
+  become_user: "{{ application_user }}"
+  environment: "{{ init_env | default({}) }}"
   community.general.django_manage:
     command: collectstatic
     project_path: "{{ deploy_dir }}"
     virtualenv: "{{ virtualenv }}"
-  notify:
-  - restart nginx
+  notify: nginx-restart
