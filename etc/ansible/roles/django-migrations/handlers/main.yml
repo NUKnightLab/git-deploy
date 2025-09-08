@@ -1,4 +1,11 @@
+#- name: restart application
+#  become: yes
+#  shell: systemctl restart {{ service_name }}
+#    warn=False
+
+
 - name: restart application
   become: yes
-  shell: systemctl restart {{ service_name }}
-    warn=False
+  ansible.builtin.service:
+    name: ddrp               # or your unit name (e.g., gunicorn-ddrp, uwsgi, etc.)
+    state: restarted
