@@ -8,6 +8,12 @@ Group={{ application_group }}
 WorkingDirectory={{ application_dir }}
 EnvironmentFile={{ env_file }}
 ExecStart={{ service_exec }}
+{% if stdout_log is defined %}
+StandardOutput=append:{{ stdout_log }}
+{% endif %}
+{% if stderr_log is defined %}
+StandardError=append:{{ stderr_log }}
+{% endif %}
 
 [Install]
 WantedBy=multi-user.target
