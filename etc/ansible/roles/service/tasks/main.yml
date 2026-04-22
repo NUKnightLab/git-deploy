@@ -9,7 +9,6 @@
   notify:
     - reload systemctl
     - restart service
-    - restart nginx
 
 - name: ensure service is running
   #  should we be using shell or command here instead of raw?

@@ -1,0 +1,2 @@
+restart_services:
+  - "{{ service_name }}"
